@@ -22,8 +22,8 @@ class Inventory(models.Model):
     container_amount = models.DecimalField(max_digits=5, decimal_places=2)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     unit_price = models.DecimalField(max_digits=5, decimal_places=2)
-    minimum_quantity = models.IntegerField(default=0)
-    current_stock = models.IntegerField(default=0)
+    minimum_quantity = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    current_stock = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     order_quantity = models.IntegerField(default=0)
 
     def __str__(self):
