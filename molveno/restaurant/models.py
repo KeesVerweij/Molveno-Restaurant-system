@@ -19,7 +19,7 @@ class Inventory(models.Model):
         default='KG'
     )
 
-    container_amount = models.IntegerField(default=0)
+    container_amount = models.DecimalField(max_digits=5, decimal_places=2)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     unit_price = models.DecimalField(max_digits=5, decimal_places=2)
     minimum_quantity = models.IntegerField(default=0)
