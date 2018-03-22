@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
 
 from restaurant.views import InventoryPageView
 
@@ -24,3 +25,5 @@ urlpatterns = [
     # allows you to navigate to localhost:8000/inventory/
     path('inventory/',InventoryPageView.as_view(),name="inventory")
 ]
+
+admin.site.site_header = settings.ADMIN_SITE_HEADER
