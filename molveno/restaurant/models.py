@@ -19,13 +19,29 @@ class Inventory(models.Model):
         default='KG'
     )
 
-    container_amount = models.DecimalField(max_digits=5, decimal_places=2)
-    price = models.DecimalField(max_digits=5, decimal_places=2)
-    unit_price = models.DecimalField(max_digits=5, decimal_places=2)
-    minimum_quantity = models.DecimalField(default=0, max_digits=5, decimal_places=2)
-    current_stock = models.DecimalField(default=0, max_digits=5, decimal_places=2)
-    stock_value = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    container_amount = models.DecimalField(
+        max_digits=5, decimal_places=2
+    )
+    price = models.DecimalField(
+        max_digits=5, decimal_places=2
+    )
+    unit_price = models.DecimalField(
+        max_digits=5, decimal_places=2
+    )
+    minimum_quantity = models.DecimalField(
+        default=0, max_digits=5, decimal_places=2
+    )
+    current_stock = models.DecimalField(
+        default=0, max_digits=5, decimal_places=2
+    )
+    stock_value = models.DecimalField(
+        default=0, max_digits=10, decimal_places=2
+    )
     order_quantity = models.IntegerField(default=0)
 
     def __str__(self):
         return self.description
+
+    class Meta:
+        verbose_name = "Inventory"
+        verbose_name_plural = "Inventory"
