@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib import auth
 
 from .models import Inventory
 
@@ -10,3 +11,5 @@ class InventoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Inventory, InventoryAdmin)
+admin.site.unregister(auth.models.User)
+admin.site.unregister(auth.models.Group)
