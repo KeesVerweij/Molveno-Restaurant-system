@@ -53,7 +53,7 @@ class MenuItemType(models.Model):
     menu_item_type = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.diet_type
+        return self.menu_item_type
 
 
 class CourseType(models.Model):
@@ -82,4 +82,11 @@ class Ingredient(models.Model):
     amount = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.menu_item
+        return str(self.menu_item)
+
+class Menu(models.Model):
+    name = models.CharField(max_length=128)
+    menu_items = models.ManyToManyField(MenuItem)
+
+    def __str__(self):
+        return str(self.name)
