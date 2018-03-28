@@ -1,5 +1,7 @@
 from django.db import models
 
+# Create your models here.
+
 
 class Inventory(models.Model):
     description = models.CharField(max_length=200)
@@ -40,8 +42,44 @@ class Inventory(models.Model):
     order_quantity = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.description
+        return self.description + ', ' + self.unit
 
     class Meta:
-        verbose_name = "Inventory"
+        verbose_name = "Inventory Item"
         verbose_name_plural = "Inventory"
+
+
+class MenuItemType(models.Model):
+    menu_item_type = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.diet_type
+
+
+class CourseType(models.Model):
+    course_type = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.course_type
+
+
+class MenuItem(models.Model):
+    name = models.CharField(max_length=128)
+    description = models.CharField(max_length=2000)
+    menu_item_type = models.ForeignKey('MenuItemType',
+                                       on_delete=models.PROTECT)
+    course_type = models.ForeignKey('CourseType',
+                                    on_delete=models.PROTECT)
+    recipe = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+
+class Ingredient(models.Model):
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Inventory, on_delete=models.PROTECT)
+    amount = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.menu_item
