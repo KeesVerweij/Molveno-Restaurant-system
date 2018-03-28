@@ -14,16 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 
 from restaurant.views import InventoryPageView
 
 urlpatterns = [
+    path('', include('restaurant.urls')),
     path('admin/', admin.site.urls),
-
-    # allows you to navigate to localhost:8000/inventory/
-    path('inventory/',InventoryPageView.as_view(),name="inventory")
 ]
 
 admin.site.site_header = settings.ADMIN_SITE_HEADER
