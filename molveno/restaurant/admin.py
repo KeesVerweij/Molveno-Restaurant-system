@@ -1,5 +1,5 @@
 from django.contrib import admin, auth
-from .models import Inventory, MenuItem, Ingredient, MenuItemType, CourseType
+from .models import Inventory, MenuItem, Ingredient, MenuItemType, CourseType, Supplier
 
 class IngredientInline(admin.TabularInline):
     model = Ingredient
@@ -17,6 +17,12 @@ class MenuItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'course_type', 'menu_item_type')
     inlines = (IngredientInline,)
 
+
+class SupplierAdmin(admin.ModelAdmin):
+    list_display = ('name','address_line1', 'address_line2', 'phone','email_address')
+
+
+admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(Inventory, InventoryAdmin)
 admin.site.register(MenuItemType)
 admin.site.register(CourseType)
