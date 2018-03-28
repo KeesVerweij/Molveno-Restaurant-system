@@ -1,8 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
-
 class Inventory(models.Model):
     description = models.CharField(max_length=200)
     brand = models.CharField(max_length=200)
@@ -53,7 +50,7 @@ class MenuItemType(models.Model):
     menu_item_type = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.diet_type
+        return self.menu_item_type
 
 
 class CourseType(models.Model):
@@ -79,7 +76,7 @@ class MenuItem(models.Model):
 class Ingredient(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Inventory, on_delete=models.PROTECT)
-    amount = models.IntegerField(default=0)
+    amount = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
-        return self.menu_item
+        return str(self.menu_item)

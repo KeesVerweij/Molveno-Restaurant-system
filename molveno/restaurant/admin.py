@@ -1,5 +1,4 @@
-from django.contrib import admin
-from django.contrib import auth
+from django.contrib import admin, auth
 from .models import Inventory, MenuItem, Ingredient, MenuItemType, CourseType
 
 class IngredientInline(admin.TabularInline):
@@ -15,6 +14,7 @@ class InventoryAdmin(admin.ModelAdmin):
 
 
 class MenuItemAdmin(admin.ModelAdmin):
+    list_display = ('name', 'course_type', 'menu_item_type')
     inlines = (IngredientInline,)
 
 admin.site.register(Inventory, InventoryAdmin)
