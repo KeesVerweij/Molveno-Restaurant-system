@@ -91,3 +91,11 @@ class Supplier(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Menu(models.Model):
+    name = models.CharField(max_length=128)
+    menu_items = models.ManyToManyField(MenuItem)
+
+    def __str__(self):
+        return self.name        
