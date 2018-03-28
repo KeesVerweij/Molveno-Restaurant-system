@@ -6,7 +6,7 @@ from django.db import models
 class Inventory(models.Model):
     description = models.CharField(max_length=200)
     brand = models.CharField(max_length=200)
-    supplier = models.CharField(max_length=200)
+    supplier = models.ForeignKey("Supplier", on_delete=models.PROTECT)
     article_number = models.IntegerField(default=0)
 
     UNIT_CHOICES = (
@@ -83,3 +83,13 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return self.menu_item
+
+class Supplier(models.Model):
+    name = models.CharField("Supplier Name", max_length=200)
+    address_line1 = models.CharField("Address Line", max_length=200)
+    address_line2 = models.CharField("Address Line", max_length=200)
+    phone = models.CharField("Phone Number", max_length=10)
+    email_address=models.CharField("Email Address", max_length=100, blank = True)
+
+    def __str__(self):
+        return self.name
