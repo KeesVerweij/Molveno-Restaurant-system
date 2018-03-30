@@ -15,9 +15,11 @@ class MenuItemAdditionInline(admin.TabularInline):
     model = MenuItemAddition
     extra = 0
 
+
 class MenuAdditionInline(admin.TabularInline):
     model = MenuAddition
     extra = 0
+
 
 class MenuCardAdmin(admin.ModelAdmin):
     list_display = ('name',)
@@ -42,12 +44,13 @@ class MenuItemAdmin(admin.ModelAdmin):
 
 
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('name','address_line1', 'address_line2', 'phone','email_address')
+    list_display = ('name', 'address_line1', 'address_line2', 'phone', 'email_address')
 
 
 class MenuInline(admin.TabularInline):
     model = Menu.menu_items.through
     extra = 3
+
 
 class MenuAdmin(admin.ModelAdmin):
     list_display = ('name',)
@@ -56,7 +59,7 @@ class MenuAdmin(admin.ModelAdmin):
     pass
 
 
-admin.site.register(MenuCard, MenuCardAdmin)
+# admin.site.register(MenuCard, MenuCardAdmin)
 admin.site.register(Menu, MenuAdmin)
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(Inventory, InventoryAdmin)
