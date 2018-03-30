@@ -6,6 +6,23 @@ from .models import MenuItemType
 from .models import CourseType
 from .models import Supplier
 from .models import Menu
+from .models import MenuCard
+from .models import MenuAddition
+from .models import MenuItemAddition
+
+
+class MenuItemAdditionInline(admin.TabularInline):
+    model = MenuItemAddition
+    extra = 0
+
+class MenuAdditionInline(admin.TabularInline):
+    model = MenuAddition
+    extra = 0
+
+class MenuCardAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    inlines = (MenuItemAdditionInline, MenuAdditionInline,)
+
 
 class IngredientInline(admin.TabularInline):
     model = Ingredient
@@ -39,6 +56,7 @@ class MenuAdmin(admin.ModelAdmin):
     pass
 
 
+admin.site.register(MenuCard, MenuCardAdmin)
 admin.site.register(Menu, MenuAdmin)
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(Inventory, InventoryAdmin)

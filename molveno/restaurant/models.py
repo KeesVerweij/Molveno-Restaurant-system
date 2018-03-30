@@ -70,7 +70,7 @@ class MenuItem(models.Model):
     recipe = models.TextField()
 
     def __str__(self):
-        return self.name
+        return self.name + ' (' + str(self.course_type) + ')'
 
 
 class Ingredient(models.Model):
@@ -98,4 +98,37 @@ class Menu(models.Model):
     menu_items = models.ManyToManyField(MenuItem)
 
     def __str__(self):
-        return self.name        
+        return self.name
+
+
+class MenuCard(models.Model):
+    name = models.CharField("Name of menu card", max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class MenuItemAddition(models.Model):
+    menu_card = models.ForeignKey(MenuCard, on_delete=models.CASCADE)
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.PROTECT)
+    selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+
+    def __str__(self):
+        return str(self.menu_card)
+
+    class Meta:
+        verbose_name = 'Menu Item'
+        verbose_name_plural = 'Menu items'
+
+
+class MenuAddition(models.Model):
+    menu_card = models.ForeignKey(MenuCard, on_delete=models.CASCADE)
+    menu = models.ForeignKey(Menu, on_delete=models.PROTECT)
+    selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+
+    def __str__(self):
+        return str(self.menu_card)
+
+    class Meta:
+        verbose_name = 'Menu'
+        verbose_name_plural = 'Menus'
