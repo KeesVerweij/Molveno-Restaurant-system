@@ -57,7 +57,7 @@ class MenuAdmin(admin.ModelAdmin):
     inlines = (MenuInline,)
 
 
-# admin.site.register(MenuCard, MenuCardAdmin)
+admin.site.register(MenuCard, MenuCardAdmin)
 admin.site.register(Menu, MenuAdmin)
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(Inventory, InventoryAdmin)
