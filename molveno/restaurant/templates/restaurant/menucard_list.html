@@ -1,0 +1,25 @@
+
+<h1>MenuCard</h1>
+<ul>
+
+{% for course in menucard_list %}
+    {% if course %}
+    <li> {{ course.0.menu_item.course_type }}</li>
+      <ul>
+        {% for dish in course %}
+          <li>{{ dish.menu_item }} EUR {{dish.selling_price}}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {%empty%}
+  <li>No menu items.</li>
+{%endfor%}
+</ul>
+<ul>
+  <li>Menus</li>
+  <ul>
+    {%for menu in menu_types%}
+      <li>{{menu.menu}} EUR {{menu.selling_price}}</li>
+    {% endfor %}
+  </ul>
+</ul>

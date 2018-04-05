@@ -6,6 +6,9 @@ from .models import MenuItemAddition
 from .models import Order
 from .forms import AddOrderForm
 from django.http import HttpResponse
+from .models import MenuCard
+from .models import MenuAddition
+from .models import CourseType
 
 
 class InventoryPageView(TemplateView):
@@ -31,7 +34,6 @@ class MenuItemView(generic.DetailView):
         # context['error_message'] = self.kwargs['error_message']
         return context
 
-
 def AddOrderView(request, item_id):
     order_item = get_object_or_404(MenuItem, pk=item_id)
     order_amount = int(request.POST.get('order_amount'))
@@ -56,3 +58,38 @@ def AddOrderView(request, item_id):
     else:
         # Redisplay the menu item: "No amount chosen"
         return HttpResponse("<h1>You didn't select an order amount</h1>")
+      
+class MenuCardList(TemplateView):
+    template_name="restaurant/menucard_list.html"
+
+    def get_course_types(self):
+        types=[i for i in CourseType.objects.all()]
+        return types
+
+    def get_queryset_items(self):
+        course_types = self.get_course_types()
+        course_type_lists = []
+
+        i = 0
+        for course_type in course_types:
+            i += 1
+            print('current course type: ', course_type)
+            c = MenuItemAddition.objects.filter(menu_item__course_type = i)
+            course_type_lists.append(c)
+            for dish in c:
+                # course_type_lists.append(dish)
+                #print(dish.menu_item)
+                #print(dish.selling_price)
+
+        return course_type_lists
+
+    def get_queryset_menus(self):
+        return MenuAddition.objects.all()
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menucard_list'] = self.get_queryset_items()
+        context["course_types"] = self.get_course_types()
+        context['menu_types'] = self.get_queryset_menus()
+        return context

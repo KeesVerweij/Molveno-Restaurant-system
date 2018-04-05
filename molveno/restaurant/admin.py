@@ -29,7 +29,7 @@ class MenuCardAdmin(admin.ModelAdmin):
 
 class IngredientInline(admin.TabularInline):
     model = Ingredient
-    extra = 1
+    extra = 0
 
 
 class InventoryAdmin(admin.ModelAdmin):
@@ -37,24 +37,24 @@ class InventoryAdmin(admin.ModelAdmin):
                     'unit', 'container_amount', 'price', 'unit_price',
                     'minimum_quantity', 'current_stock', 'stock_value',
                     'order_quantity')
-
+    ordering = ['description']
 
 class MenuItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'course_type', 'menu_item_type')
     inlines = (IngredientInline,)
-
+    ordering = ['name']
 
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ('name', 'address_line1', 'address_line2', 'phone', 'email_address')
-
+    ordering = ['name']
 
 class MenuInline(admin.TabularInline):
     model = Menu.menu_items.through
-    extra = 3
-
+    extra = 0
 
 class MenuAdmin(admin.ModelAdmin):
     list_display = ('name',)
+    
     # exclude = ('menu_items',)
     # inlines = (MenuInline,)
     pass
@@ -113,8 +113,7 @@ class OrderAdmin(admin.ModelAdmin):
             return self.list_display_links
         else:
             return (None,)
-
-
+          
 admin.site.register(MenuCard, MenuCardAdmin)
 admin.site.register(Menu, MenuAdmin)
 admin.site.register(Supplier, SupplierAdmin)
