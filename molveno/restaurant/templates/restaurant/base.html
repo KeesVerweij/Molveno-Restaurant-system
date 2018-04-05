@@ -1,0 +1,49 @@
+{% load static   %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Title of the document</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" type="text/css" href="{% static 'restaurant/style/base.css' %}">
+</head>
+
+<body>
+  <div id="header">
+
+    <div class="col-md-10 no-padding" id="header-left">
+      {% block header-text-left %}
+      {% endblock %}
+    </div>
+    <div class="col-md-2 no-padding" id="header-right">
+      {% block header-text-right %}
+      {% endblock %}
+    </div>
+
+  </div>
+
+
+  <div class="main-content">
+
+    <div class="row">
+      <div class="col-md-4 no-padding">
+        <p id="pageTitle">
+          {% block page-title %}
+          {% endblock %}
+        </p>
+        {% block content-left %}
+        {% endblock %}
+      </div>
+      <div class="col-md-8 no-padding">
+        {% block content-right%}
+        {% endblock %}
+      </div>
+    </div>
+
+  </div>
+
+  </div>
+</body>
+
+</html>
