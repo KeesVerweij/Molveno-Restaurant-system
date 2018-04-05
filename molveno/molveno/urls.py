@@ -20,8 +20,8 @@ from django.conf import settings
 from restaurant.views import InventoryPageView
 
 urlpatterns = [
-    path('', include('restaurant.urls')),
     path('admin/', admin.site.urls),
+    path('', include('restaurant.urls')),
 ]
 
 admin.site.site_header = settings.ADMIN_SITE_HEADER
