@@ -58,7 +58,7 @@ def AddOrderView(request, item_id):
     else:
         # Redisplay the menu item: "No amount chosen"
         return HttpResponse("<h1>You didn't select an order amount</h1>")
-      
+
 class MenuCardList(TemplateView):
     template_name="restaurant/menucard_list.html"
 
@@ -77,9 +77,9 @@ class MenuCardList(TemplateView):
             c = MenuItemAddition.objects.filter(menu_item__course_type = i)
             course_type_lists.append(c)
             for dish in c:
-                # course_type_lists.append(dish)
-                #print(dish.menu_item)
-                #print(dish.selling_price)
+                #course_type_lists.append(dish)
+                print(dish.menu_item)
+                print(dish.selling_price)
 
         return course_type_lists
 
