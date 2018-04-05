@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Inventory(models.Model):
     description = models.CharField(max_length=200)
     brand = models.CharField(max_length=200)
@@ -87,7 +88,7 @@ class Supplier(models.Model):
     address_line1 = models.CharField("Address Line", max_length=200)
     address_line2 = models.CharField("Address Line", max_length=200)
     phone = models.CharField("Phone Number", max_length=10)
-    email_address=models.CharField("Email Address", max_length=100, blank = True)
+    email_address = models.CharField("Email Address", max_length=100, blank=True)
 
     def __str__(self):
         return self.name
@@ -132,3 +133,14 @@ class MenuAddition(models.Model):
     class Meta:
         verbose_name = 'Menu'
         verbose_name_plural = 'Menus'
+
+
+class Order(models.Model):
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.DO_NOTHING)
+    table_no = models.DecimalField(max_digits=2, decimal_places=0, default=0)
+    completed = models.BooleanField(default=False)
+    # Order items shouldn't be deleted in the admin page,
+    # we can delete the complete items automatically when payment is processed.
+
+    def __str__(self):
+        return str(self.menu_item.name)
