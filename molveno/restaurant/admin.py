@@ -49,13 +49,12 @@ class SupplierAdmin(admin.ModelAdmin):
 
 class MenuInline(admin.TabularInline):
     model = Menu.menu_items.through
-    extra = 3
+    extra = 0
 
 class MenuAdmin(admin.ModelAdmin):
     list_display = ('name',)
-    #exclude = ('menu_items',)
-    #inlines = (MenuInline,)
-    pass
+    exclude = ('menu_items',)
+    inlines = (MenuInline,)
 
 
 # admin.site.register(MenuCard, MenuCardAdmin)
