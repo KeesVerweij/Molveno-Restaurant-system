@@ -70,7 +70,7 @@ class MenuItem(models.Model):
     recipe = models.TextField()
 
     def __str__(self):
-        return self.name + ' (' + str(self.course_type) + ')'
+        return self.name
 
 
 class Ingredient(models.Model):
@@ -114,7 +114,7 @@ class MenuItemAddition(models.Model):
     selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
-        return str(self.menu_card)
+        return str(self.menu_item) + " on " + str(self.menu_card) + " for EUR" + str(self.selling_price)
 
     class Meta:
         verbose_name = 'Menu Item'
@@ -127,7 +127,7 @@ class MenuAddition(models.Model):
     selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
-        return str(self.menu_card)
+        return str(self.menu) + " on " + str(self.menu_card) + " for EUR" + str(self.selling_price)
 
     class Meta:
         verbose_name = 'Menu'
