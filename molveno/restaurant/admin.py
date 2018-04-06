@@ -39,29 +39,25 @@ class InventoryAdmin(admin.ModelAdmin):
                     'order_quantity')
     ordering = ['description']
 
-
 class MenuItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'course_type', 'menu_item_type')
     inlines = (IngredientInline,)
     ordering = ['name']
 
-
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ('name', 'address_line1', 'address_line2', 'phone', 'email_address')
     ordering = ['name']
-
 
 class MenuInline(admin.TabularInline):
     model = Menu.menu_items.through
     extra = 0
 
-
 class MenuAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
-    # exclude = ('menu_items',)
-    # inlines = (MenuInline,)
-    pass
+    exclude = ('menu_items',)
+    inlines = (MenuInline,)
+    #pass
 
 
 def complete_order(modeladmin, request, queryset):
@@ -117,7 +113,6 @@ class OrderAdmin(admin.ModelAdmin):
             return self.list_display_links
         else:
             return (None,)
-
 
 admin.site.register(MenuCard, MenuCardAdmin)
 admin.site.register(Menu, MenuAdmin)
