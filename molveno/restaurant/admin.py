@@ -33,11 +33,21 @@ class IngredientInline(admin.TabularInline):
 
 
 class InventoryAdmin(admin.ModelAdmin):
+    readonly_fields = ('unit_price','stock_value')
     list_display = ('description', 'brand', 'supplier', 'article_number',
                     'unit', 'container_amount', 'price', 'unit_price',
                     'minimum_quantity', 'current_stock', 'stock_value',
                     'order_quantity')
     ordering = ['description']
+
+    def unit_price(self,obj):
+        if obj.price and obj.container_amount:
+            return round((obj.price / obj.container_amount), 2)
+
+    def stock_value(self,obj):
+        if obj.current_stock and obj.price and obj.container_amount:
+            return round((obj.current_stock * (obj.price / obj.container_amount)), 2)
+            
 
 class MenuItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'course_type', 'menu_item_type')

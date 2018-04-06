@@ -25,22 +25,16 @@ class Inventory(models.Model):
     price = models.DecimalField(
         max_digits=5, decimal_places=2
     )
-    unit_price = models.DecimalField(
-        max_digits=5, decimal_places=2
-    )
     minimum_quantity = models.DecimalField(
         default=0, max_digits=5, decimal_places=2
     )
     current_stock = models.DecimalField(
         default=0, max_digits=5, decimal_places=2
     )
-    stock_value = models.DecimalField(
-        default=0, max_digits=10, decimal_places=2
-    )
     order_quantity = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.description + ', ' + self.unit
+        return self.description + ' (' + self.unit + ')'
 
     class Meta:
         verbose_name = "Inventory Item"
