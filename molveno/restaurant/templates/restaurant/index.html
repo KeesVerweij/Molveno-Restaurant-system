@@ -1,0 +1,35 @@
+{% extends 'restaurant/base.html' %}
+{% block header-text-left %}
+Molveno
+{% endblock %}
+
+{% block header-text-right %}
+Welcome, admin!
+{% endblock %}
+
+{% block page-title %}
+  {{title}}
+{% endblock %}
+{% block content-left %}
+<table class="table">
+  <caption> {{table_title}} </caption>
+  <tbody>
+    {% for m in models %}
+    <tr class="d-flex">
+
+      <th scope="row">{{ m }}</th>
+      <td>
+        <a href="{{ m }}/add">Add</a>
+      </td>
+      <td>
+        <a href="{{ m }}">Change</a>
+      </td>
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+{% block content-right %}
+[more]<br />
+{% endblock %}
