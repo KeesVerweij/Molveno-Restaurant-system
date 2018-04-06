@@ -29,10 +29,10 @@ class MenuItemView(generic.DetailView):
             MenuItemAddition, menu_item=self.kwargs['pk'])
         context['selling_price'] = menu_item_addition.selling_price
         context['form'] = AddOrderForm()
-        self.request.session['table_id'] = 1
-
+        context['table_id'] = self.request.session['table_id']
         # context['error_message'] = self.kwargs['error_message']
         return context
+
 
 def AddOrderView(request, item_id):
     order_item = get_object_or_404(MenuItem, pk=item_id)
@@ -59,11 +59,12 @@ def AddOrderView(request, item_id):
         # Redisplay the menu item: "No amount chosen"
         return HttpResponse("<h1>You didn't select an order amount</h1>")
 
+
 class MenuCardList(TemplateView):
-    template_name="restaurant/menucard_list.html"
+    template_name = "restaurant/menucard_list.html"
 
     def get_course_types(self):
-        types=[i for i in CourseType.objects.all()]
+        types = [i for i in CourseType.objects.all()]
         return types
 
     def get_queryset_items(self):
@@ -74,10 +75,10 @@ class MenuCardList(TemplateView):
         for course_type in course_types:
             i += 1
             print('current course type: ', course_type)
-            c = MenuItemAddition.objects.filter(menu_item__course_type = i)
+            c = MenuItemAddition.objects.filter(menu_item__course_type=i)
             course_type_lists.append(c)
             for dish in c:
-                #course_type_lists.append(dish)
+                # course_type_lists.append(dish)
                 print(dish.menu_item)
                 print(dish.selling_price)
 
@@ -86,10 +87,15 @@ class MenuCardList(TemplateView):
     def get_queryset_menus(self):
         return MenuAddition.objects.all()
 
+    def get_table_id(self, **kwargs):
+        table_id = self.kwargs['table_id']
+        return table_id
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['menucard_list'] = self.get_queryset_items()
         context["course_types"] = self.get_course_types()
         context['menu_types'] = self.get_queryset_menus()
+        context['table_id'] = self.get_table_id()
+        self.request.session['table_id'] = self.get_table_id()
         return context
