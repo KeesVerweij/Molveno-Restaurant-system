@@ -1,7 +1,9 @@
+#python temp files
 *.pyc
 
-# migration files
+# database files
 migrations/
+db.sqlite3
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
