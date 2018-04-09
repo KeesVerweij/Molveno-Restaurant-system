@@ -40,27 +40,22 @@ class InventoryAdmin(admin.ModelAdmin):
                     'order_quantity')
     ordering = ['description']
 
-    def unit_price(self,obj):
-        if obj.price and obj.container_amount:
-            return round((obj.price / obj.container_amount), 2)
-
-    def stock_value(self,obj):
-        if obj.current_stock and obj.price and obj.container_amount:
-            return round((obj.current_stock * (obj.price / obj.container_amount)), 2)
-            
 
 class MenuItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'course_type', 'menu_item_type')
     inlines = (IngredientInline,)
     ordering = ['name']
 
+
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ('name', 'address_line1', 'address_line2', 'phone', 'email_address')
     ordering = ['name']
 
+
 class MenuInline(admin.TabularInline):
     model = Menu.menu_items.through
     extra = 0
+
 
 class MenuAdmin(admin.ModelAdmin):
     list_display = ('name',)
