@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Inventory(models.Model):
     description = models.CharField(max_length=200)
     brand = models.CharField(max_length=200)
@@ -24,22 +25,16 @@ class Inventory(models.Model):
     price = models.DecimalField(
         max_digits=5, decimal_places=2
     )
-    unit_price = models.DecimalField(
-        max_digits=5, decimal_places=2
-    )
     minimum_quantity = models.DecimalField(
         default=0, max_digits=5, decimal_places=2
     )
     current_stock = models.DecimalField(
         default=0, max_digits=5, decimal_places=2
     )
-    stock_value = models.DecimalField(
-        default=0, max_digits=10, decimal_places=2
-    )
     order_quantity = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.description + ', ' + self.unit
+        return self.description + ' (' + self.unit + ')'
 
     class Meta:
         verbose_name = "Inventory Item"
@@ -70,7 +65,7 @@ class MenuItem(models.Model):
     recipe = models.TextField()
 
     def __str__(self):
-        return self.name + ' (' + str(self.course_type) + ')'
+        return self.name
 
 
 class Ingredient(models.Model):
@@ -87,7 +82,7 @@ class Supplier(models.Model):
     address_line1 = models.CharField("Address Line", max_length=200)
     address_line2 = models.CharField("Address Line", max_length=200)
     phone = models.CharField("Phone Number", max_length=10)
-    email_address=models.CharField("Email Address", max_length=100, blank = True)
+    email_address = models.CharField("Email Address", max_length=100, blank=True)
 
     def __str__(self):
         return self.name
@@ -114,7 +109,7 @@ class MenuItemAddition(models.Model):
     selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
-        return str(self.menu_card)
+        return str(self.menu_item) + " on " + str(self.menu_card) + " for EUR" + str(self.selling_price)
 
     class Meta:
         verbose_name = 'Menu Item'
@@ -127,8 +122,19 @@ class MenuAddition(models.Model):
     selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
-        return str(self.menu_card)
+        return str(self.menu) + " on " + str(self.menu_card) + " for EUR" + str(self.selling_price)
 
     class Meta:
         verbose_name = 'Menu'
         verbose_name_plural = 'Menus'
+
+
+class Order(models.Model):
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.DO_NOTHING)
+    table_no = models.DecimalField(max_digits=2, decimal_places=0, default=0)
+    completed = models.BooleanField(default=False)
+    # Order items shouldn't be deleted in the admin page,
+    # we can delete the complete items automatically when payment is processed.
+
+    def __str__(self):
+        return str(self.menu_item.name)

@@ -1,0 +1,20 @@
+<p><h1>{{menu_item.name}}</h1></p>
+
+<b>price: €{{selling_price}}</b><br>
+{{menu_item.course_type}}, {{menu_item.menu_item_type}}<br>
+<i>{{menu_item.description}}</i>
+
+<p>
+ingredients:
+<ul>
+  {% for ingredient in menu_item.ingredient_set.all %}
+  <li>{{ingredient.ingredient.description}}</li>
+  {% endfor %}
+</ul>
+</p>
+<form action="{% url 'restaurant:addorder' menu_item.id %}" method="POST">
+  {% csrf_token %}
+  {{ form }}
+  <input type="submit" value="add to order" />
+</form>
+<p><i>you are at table: {{table_id}}</i></p>
