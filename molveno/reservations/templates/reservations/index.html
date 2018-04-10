@@ -1,0 +1,74 @@
+{% extends 'reservations/base.html' %}
+{% block page-title %}
+  Molveno Reservations
+{% endblock %}
+
+{% block content %}
+<p>Make your reservation:</p>
+<div class="form-row" id="reservation-form">
+
+   <form name="people" class="form-inline" method="POST">
+        <select class="form-control form-control-mb-2" id="inlineFormCustomSelect">
+           <option value="1">1 person</option>
+           <option value="2">2 people</option>
+           <option value="3">3 people</option>
+           <option value="4">4 people</option>
+           <option value="5">5 people</option>
+           <option value="6">6 people</option>
+           <option value="7">7 people</option>
+           <option value="8">8 people</option>
+           <option value="9">9 people</option>
+           <option value="10">10 people</option>
+        </select>
+
+        <input id="datepicker" class="form-control-mb-2" width="160" />
+      <script>
+
+        Date.prototype.ddmmmyyyy = function() {
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+
+        var dd = this.getDate();
+        var mm = monthNames[this.getMonth()].substr(0,3);
+
+        return [(dd>9 ? '' : '0') + dd,
+                mm,
+                this.getFullYear()
+              ].join(' ');
+      };
+
+        var today, maxDate, datepicker;
+        today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+        oneMonthLater = new Date(new Date().getFullYear(), new Date().getMonth()+1, new Date().getDate());
+        datepicker = $('#datepicker').datepicker({
+            uiLibrary: 'bootstrap4',
+            minDate: today,
+            maxDate: oneMonthLater,
+            format: 'dd mmm yyyy',
+            value: today.ddmmmyyyy()
+        });
+
+
+      </script>
+
+      <select name="time" class="form-control form-control-mb-2" id="inlineFormCustomSelect">
+         <option value="1600">16:00</option>
+         <option value="1630">16:30</option>
+         <option value="1700">17:00</option>
+         <option value="1730">17:30</option>
+         <option value="1800">18:00</option>
+         <option value="1830">18:30</option>
+         <option value="1900">19:00</option>
+         <option value="1930">19:30</option>
+         <option value="2000">20:00</option>
+         <option value="2030">20:30</option>
+         <option value="2100">21:00</option>
+      </select>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+   </form>
+</div>
+
+{% endblock %}
