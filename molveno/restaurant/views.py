@@ -1,8 +1,8 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views.generic.base import TemplateView
 from django.views import generic
 from .forms import AddOrderForm
-from django.http import HttpResponse, render
+from django.http import HttpResponse
 from django.apps import apps
 from django.contrib.admin.sites import AlreadyRegistered
 from django.contrib import admin, auth
@@ -123,9 +123,11 @@ def AddOrderView(request, item_id):
             return HttpResponse(str(order_amount) + " x " + order_item.name +
                                 " was added to the order list for table " + str(table_id))
         else:
-            # Redisplay the menu item: "No amount chosen"
-            form = AddOrderForm()
-            return render(request, 'menu_item.html', {'form': form})
+            pass
+    else:
+        # Redisplay the menu item: "No amount chosen"
+        form = AddOrderForm()
+        return render(request, 'restaurant/menu_item.html', {'form': form})
 
 
 def ConfirmOrderView(request, item_id):
