@@ -34,7 +34,7 @@ class Inventory(models.Model):
     order_quantity = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.description + ' (' + self.unit + ')'
+        return self.description + ' (' + str(self.unit) + ')'
 
     def _get_unit_price(self):
         if self.price and self.container_amount:
@@ -98,10 +98,26 @@ class MenuItem(models.Model):
 class Ingredient(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Inventory, on_delete=models.PROTECT)
+
+    UNIT_CHOICES = (
+        ('MG', 'Milligram'),
+        ('G', 'Gram'),
+        ('KG', 'Kilogram'),
+        ('ML', 'Milliliter'),
+        ('L', 'Liter'),
+        ('PCS', 'Pieces'),
+    )
+
+    unit = models.CharField(
+        max_length=200,
+        choices=UNIT_CHOICES,
+        default='G'
+    )
+
     amount = models.DecimalField(max_digits=5, decimal_places=2)
 
     def __str__(self):
-        return str(self.menu_item)
+        return self.menu_item.name
 
     def _get_amount_price(self):
         if self.amount:
