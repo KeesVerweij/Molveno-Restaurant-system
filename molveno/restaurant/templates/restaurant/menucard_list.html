@@ -7,7 +7,7 @@
     <li> {{ course.0.menu_item.course_type }}</li>
       <ul>
         {% for dish in course %}
-          <li><a href="{% url 'restaurant:menu_item' dish.id %}">{{ dish.menu_item }}</a> € {{dish.selling_price}}</li>
+          <li><a href="{% url 'restaurant:menu_item' dish.menu_item.id %}">{{ dish.menu_item }}</a> € {{dish.selling_price}}</li>
         {% endfor %}
       </ul>
     {% endif %}

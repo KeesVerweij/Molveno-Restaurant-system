@@ -2,13 +2,12 @@ from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateView
 from django.views import generic
 from .forms import AddOrderForm
-from django.http import HttpResponse
+from django.http import HttpResponse, render
 from django.apps import apps
 from django.contrib.admin.sites import AlreadyRegistered
 from django.contrib import admin, auth
 from .models import *
 from django.forms import ModelForm
-
 
 
 # We will use class-based views
@@ -17,6 +16,7 @@ from django.forms import ModelForm
 class InventoryPageView(TemplateView):
     # this is a reserved variable that leads to the html template page.
     template_name = "restaurant/inventory.html"
+
 
 class IndexView(TemplateView):
     template_name = "restaurant/index.html"
@@ -33,8 +33,8 @@ class IndexView(TemplateView):
     registered_model_names = [key._meta.verbose_name.capitalize() for key in admin.site._registry]
 
     # replace the dot after the app prefix with a slash, for the url
-    model_short_names_as_links = ['management/'+short_name.replace('restaurant.', 'restaurant/') + '/' for short_name in model_short_names]
-
+    model_short_names_as_links = [
+        'management/'+short_name.replace('restaurant.', 'restaurant/') + '/' for short_name in model_short_names]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -45,6 +45,7 @@ class IndexView(TemplateView):
 
         return context
 
+
 class MenuAddView(TemplateView):
     template_name = "restaurant/menu-add.html"
 
@@ -52,19 +53,21 @@ class MenuAddView(TemplateView):
     menu_table = Menu.objects.all()
     print(menu_table)
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['table'] = self.menu_table
         return context
+
 
 class MenuChangeView(TemplateView):
     template_name = "restaurant/menu-change.html"
     menu_table = Menu.objects.all()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['table'] = self.menu_table
         return context
+
 
 class SupplierAddView(TemplateView):
     template_name = "restaurant/supplier-add.html"
@@ -73,11 +76,13 @@ class SupplierAddView(TemplateView):
         context = super().get_context_data(**kwargs)
         return context
 
+
 class SupplierChangeView(TemplateView):
     template_name = "restaurant/supplier-change.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
 
 class MenuItemView(generic.DetailView):
     model = MenuItem
@@ -98,14 +103,36 @@ class MenuItemView(generic.DetailView):
 
 
 def AddOrderView(request, item_id):
+    if request.method == 'POST':
+        form = AddOrderForm(request.POST)
+        if form.is_valid() and request.session.get('table_id'):
+            order_item = get_object_or_404(MenuItem, pk=item_id)
+            order_amount = int(form.cleaned_data['order_amount'])
+            print('table id, item id, order amount: ' + str(table_id) +
+                  ', ' + str(item_id) + ', ' + str(order_amount))
+            if request.session.get('order'):
+                order = request.session['order']
+                order[str(item_id)] = order_amount
+                request.session['order'] = order
+                print("order session variable updated")
+            else:
+                order = {str(item_id): order_amount}
+                request.session['order'] = order
+                print("order session variable made")
+            print(order)
+            return HttpResponse(str(order_amount) + " x " + order_item.name +
+                                " was added to the order list for table " + str(table_id))
+        else:
+            # Redisplay the menu item: "No amount chosen"
+            form = AddOrderForm()
+            return render(request, 'menu_item.html', {'form': form})
+
+
+def ConfirmOrderView(request, item_id):
     order_item = get_object_or_404(MenuItem, pk=item_id)
     order_amount = int(request.POST.get('order_amount'))
     table_id = request.session['table_id']
     if order_amount and table_id:
-        # Always return an HttpResponseRedirect after successfully
-        # dealing with POST data. This prevents data from being posted
-        # twice if a user hits the Back button.
-        # return HttpResponseRedirect(reverse('polls:results',args=(question.id,)))
         for orders in range(order_amount):
             order = Order(menu_item=order_item, table_no=table_id)
             try:
