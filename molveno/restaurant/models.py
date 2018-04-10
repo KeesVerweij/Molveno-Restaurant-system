@@ -1,5 +1,5 @@
 from django.db import models
-
+from decimal import Decimal
 
 class Inventory(models.Model):
     description = models.CharField(max_length=200)
@@ -36,9 +36,20 @@ class Inventory(models.Model):
     def __str__(self):
         return self.description + ' (' + self.unit + ')'
 
+    def _get_unit_price(self):
+        if self.price and self.container_amount:
+            return round((self.price / self.container_amount), 2)
+    unit_price = property(_get_unit_price)
+
+    def _get_stock_value(self):
+        if self.current_stock and self.price and self.container_amount:
+            return round((self.current_stock * (self.price / self.container_amount)), 2)
+    stock_value = property(_get_stock_value)
+
     class Meta:
         verbose_name = "Inventory Item"
         verbose_name_plural = "Inventory"
+
 
 
 class MenuItemType(models.Model):
@@ -65,16 +76,38 @@ class MenuItem(models.Model):
     recipe = models.TextField()
 
     def __str__(self):
-        return self.name
+        return self.name + ' (' + str(self.course_type) + '), Suggested selling price: €' + str(self.suggested_selling_price) + ')'
+
+    def _get_uplift(self):
+        if self.course_type.course_type == 'Drink':
+            value = 1.90
+        else:
+            value = 1.65
+        return value
+    uplift = property(_get_uplift)
+
+    def _get_suggested_selling_price(self):
+        r = 0
+        allingredients = Ingredient.objects.filter(menu_item__in=MenuItem.objects.filter(name = self.name))
+        for item in allingredients:
+            r += ((item.ingredient.price / item.ingredient.container_amount) * item.amount)
+        return round(Decimal((float(r)*self.uplift)),2)
+    suggested_selling_price = property(_get_suggested_selling_price)
 
 
 class Ingredient(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Inventory, on_delete=models.PROTECT)
-    amount = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    amount = models.DecimalField(max_digits=5, decimal_places=2)
 
     def __str__(self):
         return str(self.menu_item)
+
+    def _get_amount_price(self):
+        if self.amount:
+            r = round(((self.ingredient.price / self.ingredient.container_amount) * self.amount), 2)
+            return r
+    amount_price = property(_get_amount_price)
 
 
 class Supplier(models.Model):
@@ -82,7 +115,7 @@ class Supplier(models.Model):
     address_line1 = models.CharField("Address Line", max_length=200)
     address_line2 = models.CharField("Address Line", max_length=200)
     phone = models.CharField("Phone Number", max_length=10)
-    email_address = models.CharField("Email Address", max_length=100, blank=True)
+    email_address = models.CharField("Email Address", max_length=100, blank = True)
 
     def __str__(self):
         return self.name
@@ -92,8 +125,15 @@ class Menu(models.Model):
     name = models.CharField(max_length=128)
     menu_items = models.ManyToManyField(MenuItem)
 
+    def _get_suggested_selling_price(self):
+        r = 0
+        for item in self.menu_items.all():
+            r += item.suggested_selling_price
+        return round(Decimal(r),2)
+    suggested_selling_price = property(_get_suggested_selling_price)
+
     def __str__(self):
-        return self.name
+        return self.name + ' (Suggested selling price: €' + str(self.suggested_selling_price) + ')'
 
 
 class MenuCard(models.Model):
@@ -109,7 +149,7 @@ class MenuItemAddition(models.Model):
     selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
-        return str(self.menu_item) + " on " + str(self.menu_card) + " for EUR" + str(self.selling_price)
+        return str(self.menu_item.name) + ' (' + str(self.menu_item.course_type) + ") on " + str(self.menu_card) + " for €" + str(self.selling_price)
 
     class Meta:
         verbose_name = 'Menu Item'
@@ -122,7 +162,7 @@ class MenuAddition(models.Model):
     selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
-        return str(self.menu) + " on " + str(self.menu_card) + " for EUR" + str(self.selling_price)
+        return str(self.menu.name) + " on " + str(self.menu_card) + " for €" + str(self.selling_price)
 
     class Meta:
         verbose_name = 'Menu'
