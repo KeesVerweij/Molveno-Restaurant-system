@@ -12,10 +12,10 @@
 }
 
 #header {
-  padding-top: 15px;
-  padding-bottom: 15px;
+  /* padding-top: 15px; */
+  /* padding-bottom: 15px; */
   padding-left: 25px;
-  background-color: #43768F;
+  background-color: #0284C2;
   display: flex;
   align-items: center;
 
@@ -28,4 +28,41 @@
 #header-right {
   font-size: 14px;
   color:white;
+}
+
+.logo-img {
+  float: left;
+  width: 100px;
+  height: 100px;
+}
+
+.molvenobrush {
+  font-family: "Brush Script MT", cursive;
+  font-style: italic;
+  font-variant: normal;
+  font-weight: 400;
+}
+
+h1.molvenobrush, .text-big {
+  font-size: 40px;
+}
+
+h2.molvenobrush, .text-medium {
+  font-size: 30px;
+}
+
+h3.molvenobrush, .text-small {
+  font-size: 24px;
+}
+
+li.no-bullets {
+  list-style: none;
+}
+
+.text-right {
+  float: right;
+}
+
+.text-left {
+  float: left;
 }

@@ -137,18 +137,44 @@ class MenuCardList(TemplateView):
         i = 0
         for course_type in course_types:
             i += 1
-            print('current course type: ', course_type)
+            #print('current course type: ', course_type)
             c = MenuItemAddition.objects.filter(menu_item__course_type=i)
             course_type_lists.append(c)
-            for dish in c:
-                # course_type_lists.append(dish)
-                print(dish.menu_item)
-                print(dish.selling_price)
+            # for dish in c:
+            #     course_type_lists.append(dish)
+            #     print(dish.menu_item)
+            #     print(dish.selling_price)
 
         return course_type_lists
 
     def get_queryset_menus(self):
         return MenuAddition.objects.all()
+
+    def get_menu_items_on_menus(self):
+        menus = self.get_queryset_menus()
+
+        menu_courses_list=[]
+        print("hello")
+        i = 0
+        for course in menus:
+            i+=1
+            print(course)
+            d = [m for m in course.menu.menu_items.all()]
+            menu_courses_list.append(d)
+        print(menu_courses_list)
+
+        # for menu in menus_courses_list:
+        #     courses = self.get_course_types()
+        #     for dish in menu:
+        #         # sort the list based on course type
+        #         pass
+        #     pass
+
+
+        return menu_courses_list
+
+
+
 
     def get_table_id(self, **kwargs):
         table_id = self.kwargs['table_id']
@@ -160,5 +186,6 @@ class MenuCardList(TemplateView):
         context["course_types"] = self.get_course_types()
         context['menu_types'] = self.get_queryset_menus()
         context['table_id'] = self.get_table_id()
+        context['menu_courses']=self.get_menu_items_on_menus()
         self.request.session['table_id'] = self.get_table_id()
         return context
