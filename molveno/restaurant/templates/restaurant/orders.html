@@ -1,0 +1,14 @@
+<h1>My orders:</h1>
+{% if message %}
+  {{ message }}
+{% endif %}
+{% if orders %}
+  <form action="" method="POST">
+    {% csrf_token %}
+    <table style="text-align:right; font-style: italic; font-weight:lighter;">
+      {{ form.as_table }}
+    </table>
+    <input type="submit" value="update" /> <input type="submit" value="place order" />
+  </form>
+{% endif %}
+<a href="{% url 'restaurant:menucard' table_id %}"><i>back to menu</i></a>

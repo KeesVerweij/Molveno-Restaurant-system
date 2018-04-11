@@ -1,8 +1,9 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.base import TemplateView
 from django.views import generic
-from .forms import AddOrderForm
-from django.http import HttpResponse
+from .forms import MenuItemForm, OrderForm
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.apps import apps
 from django.contrib.admin.sites import AlreadyRegistered
 from django.contrib import admin, auth
@@ -96,38 +97,64 @@ class MenuItemView(generic.DetailView):
         menu_item_addition = get_object_or_404(
             MenuItemAddition, menu_item=self.kwargs['pk'])
         context['selling_price'] = menu_item_addition.selling_price
-        context['form'] = AddOrderForm()
+        context['form'] = MenuItemForm()
         context['table_id'] = self.request.session['table_id']
         # context['error_message'] = self.kwargs['error_message']
         return context
 
 
-def AddOrderView(request, item_id):
+def add_order_view(request, item_id):
     if request.method == 'POST':
-        form = AddOrderForm(request.POST)
-        if form.is_valid() and request.session.get('table_id'):
-            order_item = get_object_or_404(MenuItem, pk=item_id)
+        form = MenuItemForm(request.POST)
+        if form.is_valid():
             order_amount = int(form.cleaned_data['order_amount'])
-            print('table id, item id, order amount: ' + str(table_id) +
-                  ', ' + str(item_id) + ', ' + str(order_amount))
-            if request.session.get('order'):
-                order = request.session['order']
-                order[str(item_id)] = order_amount
-                request.session['order'] = order
-                print("order session variable updated")
-            else:
-                order = {str(item_id): order_amount}
-                request.session['order'] = order
-                print("order session variable made")
-            print(order)
-            return HttpResponse(str(order_amount) + " x " + order_item.name +
-                                " was added to the order list for table " + str(table_id))
+            request.session['order_item'] = {'id': item_id, 'amount': order_amount}
+            return HttpResponseRedirect(reverse('restaurant:orders'))
         else:
-            pass
+            return HttpResponse("Oops! something went wrong!")
     else:
-        # Redisplay the menu item: "No amount chosen"
-        form = AddOrderForm()
-        return render(request, 'restaurant/menu_item.html', {'form': form})
+        return HttpResponse("Oops! something went wrong!")
+
+
+def orders_view(request):
+    table_id = request.session['table_id']
+
+    if request.session.get('order'):
+        '''
+        if orders have been placed before
+        '''
+        order = request.session['order']
+        message = False
+    else:
+        order = False
+        message = "no items added to your order yet!"
+
+    if request.session.get('order_item'):
+        # there will not always be an order item!
+        order_item = request.session['order_item']
+        item = get_object_or_404(MenuItem, pk=order_item['id'])
+        if request.session.get('order'):
+            order = request.session['order']
+            order[item.name] = order_item['amount']
+            request.session['order'] = order
+
+            print("order session variable updated")
+        else:
+            order = {item.name: order_item['amount']}
+            request.session['order'] = order
+            print("order session variable made")
+        del request.session['order_item']
+        request.session.modified = True
+        message = item.name + " " + str(order_item['amount']) + "x added to order!"
+    form = OrderForm(orders=order)
+    context = {
+        'orders': order,
+        'form': form,
+        'message': message,
+        'table_id': table_id
+    }
+
+    return render(request, 'restaurant/orders.html', context)
 
 
 def ConfirmOrderView(request, item_id):
