@@ -1,5 +1,7 @@
 from django.db import models
 from decimal import Decimal
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 class Inventory(models.Model):
     description = models.CharField(max_length=200)
@@ -34,7 +36,7 @@ class Inventory(models.Model):
     order_quantity = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.description + ' (' + self.unit + ')'
+        return self.description
 
     def _get_unit_price(self):
         if self.price and self.container_amount:
@@ -90,7 +92,12 @@ class MenuItem(models.Model):
         r = 0
         allingredients = Ingredient.objects.filter(menu_item__in=MenuItem.objects.filter(name = self.name))
         for item in allingredients:
-            r += ((item.ingredient.price / item.ingredient.container_amount) * item.amount)
+            if item.unit == 'KG' or item.unit == 'L' or item.unit == 'PCS':
+                r += ((item.ingredient.price / item.ingredient.container_amount) * item.amount)
+            if item.unit == 'G' or item.unit == 'ML':
+                r += ((item.ingredient.price / item.ingredient.container_amount) * item.amount/1000)
+            else:
+                r += ((item.ingredient.price / item.ingredient.container_amount) * item.amount/1000000)
         return round(Decimal((float(r)*self.uplift)),2)
     suggested_selling_price = property(_get_suggested_selling_price)
 
@@ -98,16 +105,32 @@ class MenuItem(models.Model):
 class Ingredient(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Inventory, on_delete=models.PROTECT)
+
+    UNIT_CHOICES = (
+        ('MG', 'Milligram'),
+        ('G', 'Gram'),
+        ('KG', 'Kilogram'),
+        ('ML', 'Milliliter'),
+        ('L', 'Liter'),
+        ('PCS', 'Pieces'),
+    )
+
+    unit = models.CharField(
+        max_length=200,
+        choices=UNIT_CHOICES,
+        default='G'
+    )
+
     amount = models.DecimalField(max_digits=5, decimal_places=2)
 
     def __str__(self):
-        return str(self.menu_item)
+        return self.menu_item.name
 
-    def _get_amount_price(self):
-        if self.amount:
-            r = round(((self.ingredient.price / self.ingredient.container_amount) * self.amount), 2)
-            return r
-    amount_price = property(_get_amount_price)
+    # def _get_amount_price(self):
+    #     if self.amount:
+    #         r = round(((self.ingredient.price / self.ingredient.container_amount) * self.amount), 2)
+    #         return r
+    # amount_price = property(_get_amount_price)
 
 
 class Supplier(models.Model):
@@ -146,6 +169,7 @@ class MenuCard(models.Model):
 class MenuItemAddition(models.Model):
     menu_card = models.ForeignKey(MenuCard, on_delete=models.CASCADE)
     menu_item = models.ForeignKey(MenuItem, on_delete=models.PROTECT)
+    #suggested_selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0, editable=False)
     selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
@@ -155,10 +179,15 @@ class MenuItemAddition(models.Model):
         verbose_name = 'Menu Item'
         verbose_name_plural = 'Menu items'
 
+# @receiver(pre_save, sender='MenuItemAddition')
+# def show_suggested_price(sender, **kwargs):
+
+
 
 class MenuAddition(models.Model):
     menu_card = models.ForeignKey(MenuCard, on_delete=models.CASCADE)
     menu = models.ForeignKey(Menu, on_delete=models.PROTECT)
+    #suggested_selling_price = models.DecimalField(max_digits=5, decimal_places=2, default-0, editable=False)
     selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
