@@ -148,6 +148,10 @@ def orders_view(request):
             item = get_object_or_404(MenuItem, pk=order_item['id'])
             if request.session.get('order'):
                 order = request.session['order']
+                if item.name in order:
+                    messages.success(request, 'Your order was updated succesfully!')
+                else:
+                    messages.success(request, 'Your order was added succesfully!')
                 order[item.name] = order_item['amount']
                 request.session['order'] = order
 
@@ -156,9 +160,9 @@ def orders_view(request):
                 order = {item.name: order_item['amount']}
                 request.session['order'] = order
                 print("order session variable made")
+                messages.success(request, 'Your order was added succesfully!')
             del request.session['order_item']
             request.session.modified = True
-            messages.success(request, 'Your order was placed succesfully!')
 
         if request.session.get('order'):
             '''
@@ -169,14 +173,19 @@ def orders_view(request):
             context['orders'] = order
             context['form'] = form
         else:
-            if request.session.get('orderplaced'):
+            if not request.session.get('orderplaced'):
+                messages.info(request, "no items added to your order yet!")
+            else:
                 del request.session['orderplaced']
                 request.session.modified = True
-                messages.success(request, "Order was added!")
-            else:
-                messages.info(request, "no items added to your order yet!")
 
-        placed_orders = Order.objects.filter(table_no=table_id)
+        # placed_orders = Order.objects.filter(table_no=table_id).values(
+        #     'menu_item').annotate(amount=Count('menu_item'))
+        get_orders = Order.objects.filter(
+            table_no=table_id)
+        order_list = [n.menu_item.name for n in get_orders]
+        placed_orders = {n: order_list.count(n) for n in order_list}
+        print(placed_orders)
         context['placed_orders'] = placed_orders
 
         context['table_id'] = table_id
@@ -197,7 +206,7 @@ class MenuCardList(TemplateView):
         i = 0
         for course_type in course_types:
             i += 1
-            #print('current course type: ', course_type)
+            # print('current course type: ', course_type)
             c = MenuItemAddition.objects.filter(menu_item__course_type=i)
             course_type_lists.append(c)
             # for dish in c:
@@ -213,15 +222,15 @@ class MenuCardList(TemplateView):
     def get_menu_items_on_menus(self):
         menus = self.get_queryset_menus()
 
-        menu_courses_list=[]
+        menu_courses_list = []
         print("hello")
         i = 0
         for menu in menus:
-            i+=1
+            i += 1
             d = [m for m in menu.menu.menu_items.all()]
-            #menu_courses_list.append(d)
+            # menu_courses_list.append(d)
             print(d)
-        print("menu course list:",menu_courses_list)
+        print("menu course list:", menu_courses_list)
 
         # for menu in menus_courses_list:
         #     courses = self.get_course_types()
@@ -230,11 +239,7 @@ class MenuCardList(TemplateView):
         #         pass
         #     pass
 
-
         return d
-
-
-
 
     def get_table_id(self, **kwargs):
         table_id = self.kwargs['table_id']
@@ -246,6 +251,6 @@ class MenuCardList(TemplateView):
         context["course_types"] = self.get_course_types()
         context['menu_types'] = self.get_queryset_menus()
         context['table_id'] = self.get_table_id()
-        context['menu_courses']=self.get_menu_items_on_menus()
+        context['menu_courses'] = self.get_menu_items_on_menus()
         self.request.session['table_id'] = self.get_table_id()
         return context
