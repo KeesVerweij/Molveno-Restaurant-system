@@ -156,12 +156,12 @@ class MenuCardList(TemplateView):
         menu_courses_list=[]
         print("hello")
         i = 0
-        for course in menus:
+        for menu in menus:
             i+=1
-            print(course)
-            d = [m for m in course.menu.menu_items.all()]
-            menu_courses_list.append(d)
-        print(menu_courses_list)
+            d = [m for m in menu.menu.menu_items.all()]
+            #menu_courses_list.append(d)
+            print(d)
+        print("menu course list:",menu_courses_list)
 
         # for menu in menus_courses_list:
         #     courses = self.get_course_types()
@@ -171,7 +171,7 @@ class MenuCardList(TemplateView):
         #     pass
 
 
-        return menu_courses_list
+        return d
 
 
 
