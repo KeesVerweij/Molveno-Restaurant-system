@@ -129,3 +129,4 @@ admin.site.register(MenuItem, MenuItemAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.unregister(auth.models.User)
 admin.site.unregister(auth.models.Group)
+admin.site.site_url = None
