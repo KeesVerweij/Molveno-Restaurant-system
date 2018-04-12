@@ -67,10 +67,8 @@
                     <span> € {{type.selling_price}}</span>
                   </h3>
                   <ul>
-                    {% for menu in menu_courses %}
-                      {% for dish in menu %}
-                        <li>{{ dish.name }}</li>
-                      {% endfor %}
+                    {% for d in menu_courses %}
+                    <li>{{d.name}}</li>
                     {% endfor %}</ul>
                 </li>
 
