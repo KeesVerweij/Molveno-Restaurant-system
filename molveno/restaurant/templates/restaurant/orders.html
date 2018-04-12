@@ -1,0 +1,27 @@
+<h1>My orders for table {{table_id}}:</h1>
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% if orders %}
+  <form action="{% url 'restaurant:orders' %}" method="POST">
+    {% csrf_token %}
+    <table style="text-align:right; font-style: italic; font-weight:lighter;">
+      {{ form.as_table }}
+    </table>
+    <p><input type="submit" value="place order" /></p>
+  </form>
+{% endif %}
+<p>Placed orders for your table:</p>
+{% if placed_orders %}
+<ul>
+  {% for item in placed_orders %}
+  <li>{{item.menu_item.name}}
+  {% endfor %}
+</ul>
+{% endif %}
+
+<a href="{% url 'restaurant:menucard' table_id %}"><i>back to menu</i></a>

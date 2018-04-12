@@ -1,14 +1,14 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views.generic.base import TemplateView
 from django.views import generic
-from .forms import AddOrderForm
-from django.http import HttpResponse
+from .forms import MenuItemForm, OrderForm
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.apps import apps
 from django.contrib.admin.sites import AlreadyRegistered
-from django.contrib import admin, auth
+from django.contrib import admin, auth, messages
 from .models import *
 from django.forms import ModelForm
-
 
 
 # We will use class-based views
@@ -17,6 +17,7 @@ from django.forms import ModelForm
 class InventoryPageView(TemplateView):
     # this is a reserved variable that leads to the html template page.
     template_name = "restaurant/inventory.html"
+
 
 class IndexView(TemplateView):
     template_name = "restaurant/index.html"
@@ -33,8 +34,8 @@ class IndexView(TemplateView):
     registered_model_names = [key._meta.verbose_name.capitalize() for key in admin.site._registry]
 
     # replace the dot after the app prefix with a slash, for the url
-    model_short_names_as_links = ['management/'+short_name.replace('restaurant.', 'restaurant/') + '/' for short_name in model_short_names]
-
+    model_short_names_as_links = [
+        'management/'+short_name.replace('restaurant.', 'restaurant/') + '/' for short_name in model_short_names]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -45,6 +46,7 @@ class IndexView(TemplateView):
 
         return context
 
+
 class MenuAddView(TemplateView):
     template_name = "restaurant/menu-add.html"
 
@@ -52,19 +54,21 @@ class MenuAddView(TemplateView):
     menu_table = Menu.objects.all()
     print(menu_table)
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['table'] = self.menu_table
         return context
+
 
 class MenuChangeView(TemplateView):
     template_name = "restaurant/menu-change.html"
     menu_table = Menu.objects.all()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['table'] = self.menu_table
         return context
+
 
 class SupplierAddView(TemplateView):
     template_name = "restaurant/supplier-add.html"
@@ -73,11 +77,13 @@ class SupplierAddView(TemplateView):
         context = super().get_context_data(**kwargs)
         return context
 
+
 class SupplierChangeView(TemplateView):
     template_name = "restaurant/supplier-change.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
 
 class MenuItemView(generic.DetailView):
     model = MenuItem
@@ -91,36 +97,90 @@ class MenuItemView(generic.DetailView):
         menu_item_addition = get_object_or_404(
             MenuItemAddition, menu_item=self.kwargs['pk'])
         context['selling_price'] = menu_item_addition.selling_price
-        context['form'] = AddOrderForm()
+        context['form'] = MenuItemForm()
         context['table_id'] = self.request.session['table_id']
         # context['error_message'] = self.kwargs['error_message']
         return context
 
 
-def AddOrderView(request, item_id):
-    order_item = get_object_or_404(MenuItem, pk=item_id)
-    order_amount = int(request.POST.get('order_amount'))
-    table_id = request.session['table_id']
-    if order_amount and table_id:
-        # Always return an HttpResponseRedirect after successfully
-        # dealing with POST data. This prevents data from being posted
-        # twice if a user hits the Back button.
-        # return HttpResponseRedirect(reverse('polls:results',args=(question.id,)))
-        for orders in range(order_amount):
-            order = Order(menu_item=order_item, table_no=table_id)
-            try:
-                order.save()
-            except Exception as e:
-                print(e)
-                return HttpResponse("<h1>There was a problem. Item not saved.</h1>")
-
-        return HttpResponse("you ordered " + order_item.name + " " +
-                            str(order_amount) +
-                            " times for table " + str(table_id) + "<br>" +
-                            "<h1>Item successfully saved</h1>")
+def add_order_view(request, item_id):
+    if request.method == 'POST':
+        form = MenuItemForm(request.POST)
+        if form.is_valid():
+            order_amount = int(form.cleaned_data['order_amount'])
+            request.session['order_item'] = {'id': item_id, 'amount': order_amount}
+            return HttpResponseRedirect(reverse('restaurant:orders'))
+        else:
+            return HttpResponse("Oops! something went wrong!")
     else:
-        # Redisplay the menu item: "No amount chosen"
-        return HttpResponse("<h1>You didn't select an order amount</h1>")
+        return HttpResponse("Oops! something went wrong!")
+
+
+def orders_view(request):
+    table_id = request.session['table_id']
+    if request.method == 'POST':
+        # if form is submitted, save orders to databaseself.
+        message = ""
+        for item, amount in request.POST.items():
+            if item in request.session['order']:
+                message += item + ', ' + amount + '</br>'
+                order_item = get_object_or_404(MenuItem, name=item)
+                table_id = request.session['table_id']
+                for orders in range(int(amount)):
+                    order = Order(menu_item=order_item, table_no=table_id)
+                    try:
+                        order.save()
+                    except Exception as e:
+                        print(e)
+                        messages.error(request, 'There was a problem, your order was not places!')
+                        return HttpResponseRedirect(reverse('restaurant:orders'))
+        request.session['orderplaced'] = True
+        del request.session['order']
+        request.session.modified = True
+        messages.success(request, 'Your order was placed succesfully!')
+        return HttpResponseRedirect(reverse('restaurant:orders'))
+    else:
+        # otherwise render the order page.
+        context = {}
+        if request.session.get('order_item'):
+            # there will not always be an order item to add!
+            order_item = request.session['order_item']
+            item = get_object_or_404(MenuItem, pk=order_item['id'])
+            if request.session.get('order'):
+                order = request.session['order']
+                order[item.name] = order_item['amount']
+                request.session['order'] = order
+
+                print("order session variable updated")
+            else:
+                order = {item.name: order_item['amount']}
+                request.session['order'] = order
+                print("order session variable made")
+            del request.session['order_item']
+            request.session.modified = True
+            messages.success(request, 'Your order was placed succesfully!')
+
+        if request.session.get('order'):
+            '''
+            if orders have been placed before
+            '''
+            order = request.session['order']
+            form = OrderForm(order, False)
+            context['orders'] = order
+            context['form'] = form
+        else:
+            if request.session.get('orderplaced'):
+                del request.session['orderplaced']
+                request.session.modified = True
+                messages.success(request, "Order was added!")
+            else:
+                messages.info(request, "no items added to your order yet!")
+
+        placed_orders = Order.objects.filter(table_no=table_id)
+        context['placed_orders'] = placed_orders
+
+        context['table_id'] = table_id
+        return render(request, 'restaurant/orders.html', context)
 
 
 class MenuCardList(TemplateView):

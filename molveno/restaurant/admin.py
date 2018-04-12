@@ -33,7 +33,7 @@ class IngredientInline(admin.TabularInline):
 
 
 class InventoryAdmin(admin.ModelAdmin):
-    readonly_fields = ('unit_price','stock_value')
+    readonly_fields = ('unit_price', 'stock_value')
     list_display = ('description', 'brand', 'supplier', 'article_number',
                     'unit', 'container_amount', 'price', 'unit_price',
                     'minimum_quantity', 'current_stock', 'stock_value',
@@ -62,7 +62,7 @@ class MenuAdmin(admin.ModelAdmin):
 
     exclude = ('menu_items',)
     inlines = (MenuInline,)
-    #pass
+    # pass
 
 
 def complete_order(modeladmin, request, queryset):
@@ -118,6 +118,7 @@ class OrderAdmin(admin.ModelAdmin):
             return self.list_display_links
         else:
             return (None,)
+
 
 admin.site.register(MenuCard, MenuCardAdmin)
 admin.site.register(Menu, MenuAdmin)
