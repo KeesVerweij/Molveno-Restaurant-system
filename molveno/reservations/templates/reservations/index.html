@@ -1,0 +1,172 @@
+{% extends 'reservations/base.html' %}
+{% block page-title %}
+Molveno Reservations
+{% endblock %}
+
+{% block content %}
+<p>Make your reservation:</p>
+
+<form name="people" method="GET" action="">
+
+  <div class="form-row" id="personal-details-1">
+
+    <div class="col-md-2 mb-3">
+      <input name="first_name" id="first_name" type="text" class="form-control" placeholder="First name">
+    </div>
+
+    <div class="col-md-2 mb-3">
+      <input name="last_name" id="last_name"  type="text" class="form-control" placeholder="Last name">
+    </div>
+
+  </div>
+
+  <div class="form-row" id="personal-details-2">
+
+    <div class="col-md-2 mb-3">
+      <input name="email" id="email" type="email" class="form-control" placeholder="E-mail">
+    </div>
+
+    <div name="phone" class="col-md-2 mb-3">
+      <input name="phone" id="phone" type="tel" class="form-control" placeholder="Phone number">
+    </div>
+
+  </div>
+
+
+  <div class="form-row" id="reservation-form">
+    <div class="col-md-2 mb-3">
+      <select name="people" class="form-control form-control-mb-2" id="num-people">
+        <option value="1">1 person</option>
+        <option value="2" selected>2 people</option>
+        <option value="3">3 people</option>
+        <option value="4">4 people</option>
+        <option value="5">5 people</option>
+        <option value="6">6 people</option>
+        <option value="7">7 people</option>
+        <option value="8">8 people</option>
+        <option value="9">9 people</option>
+        <option value="10">10 people</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-2 mb-3">
+      <input name="date" id="datepicker" class="form-control-mb-2" width="160" />
+
+      <script>
+      Date.prototype.ddmmmyyyy = function() {
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+
+      var dd = this.getDate();
+      var mm = monthNames[this.getMonth()].substr(0,3);
+
+      return [(dd>9 ? '' : '0') + dd, mm,this.getFullYear()].join(' ');
+      };
+
+      var today, maxDate, datepicker;
+      today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+      oneMonthLater = new Date(new Date().getFullYear(), new Date().getMonth()+1, new Date().getDate());
+      datepicker = $('#datepicker').datepicker({
+        uiLibrary: 'bootstrap4',
+        minDate: today,
+        maxDate: oneMonthLater,
+        format: 'dd mmm yyyy',
+        value: today.ddmmmyyyy()
+      });
+      </script>
+    </div>
+
+  </div>
+
+  <div class="form-row">
+    <div class="col-auto mb-3">
+      <select name="time-hour" class="form-control form-control-mb-2" id="time-hour-picker">
+        <option value="12" selected>12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20</option>
+        <option value="21">21</option>
+      </select>
+    </div>
+
+    <div class="col-auto mb-3">
+      <select name="time-minutes" class="form-control form-control-mb-2" id="time-minutes-picker">
+        <option value="00" selected>00</option>
+        <option value="15">15</option>
+        <option value="30">30</option>
+        <option value="45">45</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <button type="submit" class="btn btn-primary">Check availability</button>
+  </div>
+</form>
+
+<br />
+{{ response }} <br />
+
+{% if page_action %}
+{% endif %}
+
+
+<div class="form-row" id="booking_confirmation" style="display:none">
+  <br />
+  <button type="submit" class="btn btn-success">Confirm booking</button>
+</div>
+
+
+<script>
+
+var first_name = "{{first_name}}";
+var last_name = "{{last_name}}";
+var email = "{{email}}";
+var phone = "{{phone}}";
+var email_valid = "{{email_valid}}"
+
+var selected_num_people = "{{selected_num_people}}";
+var selected_date = "{{selected_date}}";
+var selected_time_hours = "{{selected_time_hours}}";
+var selected_time_minutes = "{{selected_time_minutes}}";
+
+
+if(first_name) document.getElementById('first_name').value = first_name;
+if(last_name) document.getElementById('last_name').value = last_name;
+if(email) document.getElementById('email').value = email;
+if(phone) document.getElementById('phone').value = phone;
+
+
+if(selected_num_people) document.getElementById('num-people').value = selected_num_people;
+if(selected_date) document.getElementById('datepicker').value = selected_date;
+if(selected_time_hours) document.getElementById('time-hour-picker').value = selected_time_hours;
+if(selected_time_minutes) document.getElementById('time-minutes-picker').value = selected_time_minutes;
+
+console.log("email valid?"+email_valid)
+if(email_valid == "True"){
+  //document.getElementById('email').value = selected_time_minutes;
+} else {
+}
+
+console.log()
+
+var next_action = "{{page_action}}"
+console.log("next action "+next_action)
+
+if(next_action == "request_booking_confirmation") {
+  document.getElementById('booking_confirmation').style.display = "block";
+}
+
+</script>
+
+
+<br />
+{% endblock %}

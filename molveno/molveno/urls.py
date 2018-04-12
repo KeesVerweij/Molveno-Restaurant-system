@@ -22,6 +22,7 @@ from restaurant.views import InventoryPageView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('restaurant.urls')),
+    path('reservations/', include('reservations.urls')),
 ]
 
 admin.site.site_header = settings.ADMIN_SITE_HEADER

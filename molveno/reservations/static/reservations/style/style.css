@@ -1,0 +1,36 @@
+.main-content {
+  padding-top: 20px;
+  padding-left: 40px;
+}
+
+.reservation-form {
+  margin-left: 20px;
+  padding-right:10px;
+}
+
+#tableTitle{
+  font-size: 16px;
+}
+
+#pageTitle{
+  font-size: 24px;
+}
+
+#header {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left: 25px;
+  background-color: #43768F;
+  display: flex;
+  align-items: center;
+
+}
+#header-left {
+  font-size: 24px;
+  color:white;
+}
+
+#header-right {
+  font-size: 14px;
+  color:white;
+}
