@@ -43,6 +43,23 @@
   font-weight: 400;
 }
 
+h1 {
+  font-family: "Brush Script MT", cursive;
+  font-style: italic;
+  font-variant: normal;
+  font-weight: 400;
+}
+
+td {
+    padding-left: 20px;
+}
+
+th {
+  display: table-cell;
+  font-weight: lighter;
+  text-align: left;
+}
+
 h1.molvenobrush, .text-big {
   font-size: 40px;
 }
@@ -65,4 +82,8 @@ li.no-bullets {
 
 .text-left {
   float: left;
+}
+
+.orderform {
+  display: inline-block;
 }

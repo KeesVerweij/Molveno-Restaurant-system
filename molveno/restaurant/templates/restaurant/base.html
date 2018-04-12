@@ -1,4 +1,4 @@
-{% load static   %}
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,10 +13,12 @@
   <div id="header">
 
     <div class="col-md-10 no-padding" id="header-left">
+      <div class='molvenobrush'>Molveno Lake Resort</div>
       {% block header-text-left %}
       {% endblock %}
     </div>
     <div class="col-md-2 no-padding" id="header-right">
+      <img class='logo-img' img src="/static/restaurant/images/Logo.jpg" alt="logo" />
       {% block header-text-right %}
       {% endblock %}
     </div>
@@ -27,23 +29,19 @@
   <div class="main-content">
 
     <div class="row">
-      <div class="col-md-4 no-padding">
-        <p id="pageTitle">
-          {% block page-title %}
+      <div class="col-md-10 no-padding">
+        <p id="menu-card">
+          {% block content %}
           {% endblock %}
         </p>
         {% block content-left %}
         {% endblock %}
       </div>
-      <div class="col-md-8 no-padding">
+
+      <div class="col-md-2 no-padding">
         {% block content-right%}
         {% endblock %}
       </div>
-    </div>
+      </div>
 
-  </div>
-
-  </div>
-</body>
-
-</html>
+      </div>

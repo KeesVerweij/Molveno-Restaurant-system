@@ -1,91 +1,50 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Title of the document</title>
-  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
-  <link rel="stylesheet" type="text/css" href="{% static 'restaurant/style/base.css' %}">
-</head>
-  
-<body>
-  <div id="header">
-
-    <div class="col-md-10 no-padding" id="header-left">
-      <div class='molvenobrush'>Molveno Lake Resort</div>
-      {% block header-text-left %}
-      {% endblock %}
+{% extends 'restaurant/base.html' %}
+<!-- <div style="margin:auto; width:80%"> -->
+{% block content %}
+    <div class="text-right">
+      <div class="molvenobrush text-medium"> Table number: {{table_id}}</div>
+      <a href="{% url 'restaurant:orders' %}">My orders</a>
     </div>
-    <div class="col-md-2 no-padding" id="header-right">
-      <img class='logo-img' img src="/static/restaurant/images/Logo.jpg" alt="logo" />
-      {% block header-text-right %}
-      {% endblock %}
-    </div>
-
-  </div>
-
-
-  <div class="main-content">
-
-    <div class="row">
-      <div class="col-md-10 no-padding">
-        <p id="menu-card">
-          {% block menu-card %}
-        <!-- <div style="margin:auto; width:80%"> -->
-            <p class="molvenobrush text-medium text-right">Table number: {{table_id}}</p>
-
-              <h1 class="molvenobrush">MenuCard</h1>
-              <ul id="menu-items">
-                {% for course in menucard_list %}
-                  {% if course %}
-                    <li class="no-bullets"> <h2 class="molvenobrush">{{ course.0.menu_item.course_type }}</h2></li>
-                      <ul>
-                        {% for dish in course %}
-                          <li class="no-bullets">
-                            <h3 class="molvenobrush">
-                              <a href="{% url 'restaurant:menu_item' dish.id %}">{{ dish.menu_item.name }}</a>
-                              <span> € {{dish.selling_price}}</span>
-                            </h3>
-                            <p>{{dish.menu_item.description}}</p>
-                          </li>
-                        {% endfor %}
-                      </ul>
-                  {% endif %}
-                {%empty%}
-                  <li>No menu items.</li>
-              {%endfor%}
-            </ul>
-
-            <ul id="menus">
-              <li class="no-bullets"> <h2 class="molvenobrush">Menus</h2></li>
+      <h1 class="molvenobrush">MenuCard</h1>
+      <ul id="menu-items">
+        {% for course in menucard_list %}
+          {% if course %}
+            <li class="no-bullets"><h2 class="molvenobrush">{{ course.0.menu_item.course_type }}</h2></li>
               <ul>
-                {% for type in menu_types %}
-                <li class="no-bullets">
-                  <h3 class="molvenobrush">
-                    <span> {{type.menu.name}}</span>
-                    <span> € {{type.selling_price}}</span>
-                  </h3>
-                  <ul>
-                    {% for d in menu_courses %}
-                    <li>{{d.name}}</li>
-                    {% endfor %}</ul>
-                </li>
-
+                {% for dish in course %}
+                  <li class="no-bullets">
+                    <h3 class="molvenobrush">
+                      <a href="{% url 'restaurant:menu_item' dish.id %}">{{ dish.menu_item.name }}</a>
+                      <span> € {{dish.selling_price}}</span>
+                    </h3>
+                    <p>{{dish.menu_item.description}}</p>
+                  </li>
                 {% endfor %}
               </ul>
-            </ul>
-          </div>
-        {% endblock %}
-        </p>
-        {% block content-left %}
-        {% endblock %}
-      </div>
+          {% endif %}
+        {%empty%}
+          <li>No menu items.</li>
+      {%endfor%}
+    </ul>
 
-      <div class="col-md-2 no-padding">
-        {% block content-right%}
-        {% endblock %}
-      </div>
-      </div>
+    <ul id="menus">
+      <li class="no-bullets"> <h2 class="molvenobrush">Menus</h2></li>
+      <ul>
+        {% for type in menu_types %}
+        <li class="no-bullets">
+          <h3 class="molvenobrush">
+            <span> {{type.menu.name}}</span>
+            <span> € {{type.selling_price}}</span>
+          </h3>
+          <ul>
+            {% for d in menu_courses %}
+            <li>{{d.name}}</li>
+            {% endfor %}</ul>
+        </li>
 
-      </div>
+        {% endfor %}
+      </ul>
+    </ul>
+  </div>
+
+{% endblock %}
