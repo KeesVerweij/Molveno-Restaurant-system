@@ -1,3 +1,7 @@
+{% extends 'restaurant/base.html' %}
+
+{% block content %}
+
 <p><h1>{{menu_item.name}}</h1></p>
 
 <b>price: €{{selling_price}}</b><br>
@@ -15,6 +19,9 @@ ingredients:
 <form action="{% url 'restaurant:addorder' menu_item.id %}" method="POST">
   {% csrf_token %}
   {{ form }}
-  <input type="submit" value="add to order" />
+  <input type="submit" value="add to order"/>
 </form>
-<p><i>you are at table: {{table_id}}</i></p>
+<br><p><i>you are at table: {{table_id}}</i></p>
+<a href="{% url 'restaurant:menucard' table_id %}"><i>back to menu</i></a>
+
+{% endblock %}

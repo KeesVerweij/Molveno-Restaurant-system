@@ -1,3 +1,7 @@
+{% extends 'restaurant/base.html' %}
+
+{% block content %}
+
 <h1>My orders for table {{table_id}}:</h1>
 {% if messages %}
   <ul class="messages">
@@ -9,12 +13,15 @@
 {% if orders %}
   <form action="{% url 'restaurant:orders' %}" method="POST">
     {% csrf_token %}
-    <table style="text-align:right; font-style: italic; font-weight:lighter;">
-      {{ form.as_table }}
-    </table>
-    <p><input type="submit" value="place order" /></p>
+    <div class='orderform'>
+      <p><table>
+          {{ form.as_table }}
+      </table></p>
+      <input type="submit" value="place order" style="float: right;"/>
+    </div>
   </form>
 {% endif %}
+<p>
 <p>Placed orders for your table:</p>
 {% if placed_orders %}
 <ul>
@@ -23,5 +30,7 @@
   {% endfor %}
 </ul>
 {% endif %}
+</p>
+<p><a href="{% url 'restaurant:menucard' table_id %}"><i>back to menu</i></a></p>
 
-<a href="{% url 'restaurant:menucard' table_id %}"><i>back to menu</i></a>
+{% endblock %}
