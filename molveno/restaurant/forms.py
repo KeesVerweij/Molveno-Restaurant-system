@@ -10,11 +10,15 @@ class MenuItemForm(forms.Form):
 
 
 class OrderForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        order = kwargs.pop('orders')
+    def __init__(self, orders, validate, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
-        print(order)
-        for key in order:
-            print(key + "," + str(order[key]))
-            self.fields[key] = forms.CharField(widget=TextInput(attrs={
-                'min': '1', 'max': '10', 'type': 'number', 'value': order[key]}))
+        if validate:
+            print('validate form')
+            for key in orders:
+                self.fields[key] = forms.CharField(widget=TextInput(attrs={
+                    'min': '1', 'max': '10', 'type': 'number'}))
+        else:
+            print('create form')
+            for key in orders:
+                self.fields[key] = forms.CharField(widget=TextInput(attrs={
+                    'min': '1', 'max': '10', 'type': 'number', 'value': orders[key]}))

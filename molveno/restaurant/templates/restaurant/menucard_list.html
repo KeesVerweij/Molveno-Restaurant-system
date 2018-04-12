@@ -1,7 +1,7 @@
 
 <h1>MenuCard</h1>
 <ul>
-
+<p><a href="{% url 'restaurant:orders' %}">my orders</a></p>
 {% for course in menucard_list %}
     {% if course %}
     <li> {{ course.0.menu_item.course_type }}</li>

@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.apps import apps
 from django.contrib.admin.sites import AlreadyRegistered
-from django.contrib import admin, auth
+from django.contrib import admin, auth, messages
 from .models import *
 from django.forms import ModelForm
 
@@ -118,65 +118,69 @@ def add_order_view(request, item_id):
 
 def orders_view(request):
     table_id = request.session['table_id']
-
-    if request.session.get('order'):
-        '''
-        if orders have been placed before
-        '''
-        order = request.session['order']
-        message = False
-    else:
-        order = False
-        message = "no items added to your order yet!"
-
-    if request.session.get('order_item'):
-        # there will not always be an order item!
-        order_item = request.session['order_item']
-        item = get_object_or_404(MenuItem, pk=order_item['id'])
-        if request.session.get('order'):
-            order = request.session['order']
-            order[item.name] = order_item['amount']
-            request.session['order'] = order
-
-            print("order session variable updated")
-        else:
-            order = {item.name: order_item['amount']}
-            request.session['order'] = order
-            print("order session variable made")
-        del request.session['order_item']
+    if request.method == 'POST':
+        # if form is submitted, save orders to databaseself.
+        message = ""
+        for item, amount in request.POST.items():
+            if item in request.session['order']:
+                message += item + ', ' + amount + '</br>'
+                order_item = get_object_or_404(MenuItem, name=item)
+                table_id = request.session['table_id']
+                for orders in range(int(amount)):
+                    order = Order(menu_item=order_item, table_no=table_id)
+                    try:
+                        order.save()
+                    except Exception as e:
+                        print(e)
+                        messages.error(request, 'There was a problem, your order was not places!')
+                        return HttpResponseRedirect(reverse('restaurant:orders'))
+        request.session['orderplaced'] = True
+        del request.session['order']
         request.session.modified = True
-        message = item.name + " " + str(order_item['amount']) + "x added to order!"
-    form = OrderForm(orders=order)
-    context = {
-        'orders': order,
-        'form': form,
-        'message': message,
-        'table_id': table_id
-    }
-
-    return render(request, 'restaurant/orders.html', context)
-
-
-def ConfirmOrderView(request, item_id):
-    order_item = get_object_or_404(MenuItem, pk=item_id)
-    order_amount = int(request.POST.get('order_amount'))
-    table_id = request.session['table_id']
-    if order_amount and table_id:
-        for orders in range(order_amount):
-            order = Order(menu_item=order_item, table_no=table_id)
-            try:
-                order.save()
-            except Exception as e:
-                print(e)
-                return HttpResponse("<h1>There was a problem. Item not saved.</h1>")
-
-        return HttpResponse("you ordered " + order_item.name + " " +
-                            str(order_amount) +
-                            " times for table " + str(table_id) + "<br>" +
-                            "<h1>Item successfully saved</h1>")
+        messages.success(request, 'Your order was placed succesfully!')
+        return HttpResponseRedirect(reverse('restaurant:orders'))
     else:
-        # Redisplay the menu item: "No amount chosen"
-        return HttpResponse("<h1>You didn't select an order amount</h1>")
+        # otherwise render the order page.
+        context = {}
+        if request.session.get('order_item'):
+            # there will not always be an order item to add!
+            order_item = request.session['order_item']
+            item = get_object_or_404(MenuItem, pk=order_item['id'])
+            if request.session.get('order'):
+                order = request.session['order']
+                order[item.name] = order_item['amount']
+                request.session['order'] = order
+
+                print("order session variable updated")
+            else:
+                order = {item.name: order_item['amount']}
+                request.session['order'] = order
+                print("order session variable made")
+            del request.session['order_item']
+            request.session.modified = True
+            messages.success(request, 'Your order was placed succesfully!')
+
+        if request.session.get('order'):
+            '''
+            if orders have been placed before
+            '''
+            order = request.session['order']
+            form = OrderForm(order, False)
+            context['orders'] = order
+            context['form'] = form
+        else:
+            if request.session.get('orderplaced'):
+                del request.session['orderplaced']
+                request.session.modified = True
+                messages.success(request, "Order was added!")
+            else:
+                messages.info(request, "no items added to your order yet!")
+
+        placed_orders = Order.objects.filter(table_no=table_id)
+        context['placed_orders'] = placed_orders
+
+        context['table_id'] = table_id
+        return render(request, 'restaurant/orders.html', context)
 
 
 class MenuCardList(TemplateView):
