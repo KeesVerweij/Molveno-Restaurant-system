@@ -14,7 +14,7 @@
                 {% for dish in course %}
                   <li class="no-bullets">
                     <h3 class="molvenobrush">
-                      <a href="{% url 'restaurant:menu_item' dish.id %}">{{ dish.menu_item.name }}</a>
+                      <a href="{% url 'restaurant:menu_item' dish.menu_item.id %}">{{ dish.menu_item.name }}</a>
                       <span> € {{dish.selling_price}}</span>
                     </h3>
                     <p>{{dish.menu_item.description}}</p>

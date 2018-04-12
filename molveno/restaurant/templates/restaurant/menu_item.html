@@ -4,12 +4,12 @@
 
 <p><h1>{{menu_item.name}}</h1></p>
 
-<b>price: €{{selling_price}}</b><br>
+<p><b>price: €{{selling_price}}</b><br>
 {{menu_item.course_type}}, {{menu_item.menu_item_type}}<br>
-<i>{{menu_item.description}}</i>
+<i>{{menu_item.description}}</i></p>
 
 <p>
-ingredients:
+<b>ingredients:</b>
 <ul>
   {% for ingredient in menu_item.ingredient_set.all %}
   <li>{{ingredient.ingredient.description}}</li>
@@ -18,8 +18,10 @@ ingredients:
 </p>
 <form action="{% url 'restaurant:addorder' menu_item.id %}" method="POST">
   {% csrf_token %}
-  {{ form }}
-  <input type="submit" value="add to order"/>
+  <div class='orderform'>
+  <p><table>{{ form.as_table }}</table></p>
+  <input type="submit" value="add to order" style="float: right;" />
+</div>
 </form>
 <br><p><i>you are at table: {{table_id}}</i></p>
 <a href="{% url 'restaurant:menucard' table_id %}"><i>back to menu</i></a>
