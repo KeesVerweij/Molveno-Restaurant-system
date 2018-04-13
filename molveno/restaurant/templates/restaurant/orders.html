@@ -29,6 +29,10 @@
   <li>{{amount}}x {{item}}
   {% endfor %}
 </ul>
+{% else %}
+<ul>
+  <li>No orders placed yet!
+</ul>
 {% endif %}
 </p>
   <a href="{% url 'restaurant:menucard' table_id %}" style="padding-left:1.5em"><i>back to menu</i></a>

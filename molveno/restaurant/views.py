@@ -183,10 +183,12 @@ def orders_view(request):
         #     'menu_item').annotate(amount=Count('menu_item'))
         get_orders = Order.objects.filter(
             table_no=table_id)
-        order_list = [n.menu_item.name for n in get_orders]
-        placed_orders = {n: order_list.count(n) for n in order_list}
-        print(placed_orders)
-        context['placed_orders'] = placed_orders
+        if(get_orders):
+            print("hi")
+            order_list = [n.menu_item.name for n in get_orders]
+            placed_orders = {n: order_list.count(n) for n in order_list}
+            print(placed_orders)
+            context['placed_orders'] = placed_orders
 
         context['table_id'] = table_id
         return render(request, 'restaurant/orders.html', context)
