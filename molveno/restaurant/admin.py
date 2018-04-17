@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib import admin, auth
 from .models import Inventory
 from .models import MenuItem
@@ -69,7 +70,7 @@ def complete_order(modeladmin, request, queryset):
     """
     function used in the Order Admin page to add a custom action to complete orders
     """
-    queryset.update(completed=True)
+    queryset.update(completed=True, completed_time=datetime.now())
 
 
 # provide a verbose desciption for the complete orders function
@@ -80,7 +81,7 @@ def uncomplete_order(modeladmin, request, queryset):
     """
     function used in the Order Admin page to add a custom action to complete orders
     """
-    queryset.update(completed=False)
+    queryset.update(completed=False, completed_time=None)
 
 
 # provide a verbose desciption for the complete orders function

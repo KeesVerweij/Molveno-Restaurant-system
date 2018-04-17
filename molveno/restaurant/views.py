@@ -127,7 +127,8 @@ def orders_view(request):
                 order_item = get_object_or_404(MenuItem, name=item)
                 table_id = request.session['table_id']
                 for orders in range(int(amount)):
-                    order = Order(menu_item=order_item, table_no=table_id)
+                    order = Order(menu_item=order_item, table_no=table_id,
+                                  order_time=datetime.datetime.now())
                     try:
                         order.save()
                     except Exception as e:
@@ -184,7 +185,6 @@ def orders_view(request):
         get_orders = Order.objects.filter(
             table_no=table_id)
         if(get_orders):
-            print("hi")
             order_list = [n.menu_item.name for n in get_orders]
             placed_orders = {n: order_list.count(n) for n in order_list}
             print(placed_orders)
@@ -257,5 +257,6 @@ class MenuCardList(TemplateView):
         self.request.session['table_id'] = self.get_table_id()
         return context
 
+
 def request_waiter(request):
-    return render(request,'restaurant/waiter.html')
+    return render(request, 'restaurant/waiter.html')
