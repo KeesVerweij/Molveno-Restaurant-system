@@ -256,3 +256,6 @@ class MenuCardList(TemplateView):
         context['menu_courses'] = self.get_menu_items_on_menus()
         self.request.session['table_id'] = self.get_table_id()
         return context
+
+def request_waiter(request):
+    return render(request,'restaurant/waiter.html')

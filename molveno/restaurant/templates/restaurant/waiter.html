@@ -26,27 +26,9 @@
 
   </div>
 
+{% block content %}
+  <h3 class="molvenobrush main-content">Your waiter will be with you shortly!</h3>
+{% endblock %}
 
-  <div class="main-content">
-
-    <div class="row">
-      <div class="col-md-12 no-padding">
-        <p id="menu-card">
-          {% block content %}
-          {% endblock %}
-        </p>
-        {% block content-left %}
-        {% endblock %}
-      </div>
-    </div>
-</div>
-<div>
-  {% block content-footer%}
-      <footer class="footer">
-        <div class="container">
-          <form action="{% url 'restaurant:waiter' %}" method="POST">
-          <a href="/waiter" button type="button" class="btn btn-link molvenobrush"><h3>Request the waiter!</h3></button>
-        </div>
-      </footer>
-  {% endblock %}
-</div>
+</body>
+</html>

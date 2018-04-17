@@ -6,10 +6,10 @@
       <a href="{% url 'restaurant:orders' %}">My orders</a>
     </div>
       <h1 class="molvenobrush">MenuCard</h1>
-      <ul id="menu-items">
+      <div id="menu-items">
         {% for course in menucard_list %}
           {% if course %}
-            <li class="no-bullets"><h2 class="molvenobrush">{{ course.0.menu_item.course_type }}</h2></li>
+            <div class="no-bullets"><h2 class="molvenobrush">{{ course.0.menu_item.course_type }}</h2></div>
               <ul>
                 {% for dish in course %}
                   <li class="no-bullets">
@@ -17,7 +17,7 @@
                       <a href="{% url 'restaurant:menu_item' dish.menu_item.id %}">{{ dish.menu_item.name }}</a>
                       <span> € {{dish.selling_price}}</span>
                     </h3>
-                    <p>{{dish.menu_item.description}}</p>
+                    <p class="menu-description">{{dish.menu_item.description}}</p>
                   </li>
                 {% endfor %}
               </ul>
@@ -25,7 +25,7 @@
         {%empty%}
           <li>No menu items.</li>
       {%endfor%}
-    </ul>
+    </div>
 
     <ul id="menus">
       <li class="no-bullets"> <h2 class="molvenobrush">Menus</h2></li>
@@ -46,5 +46,4 @@
       </ul>
     </ul>
   </div>
-
 {% endblock %}
