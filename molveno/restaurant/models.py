@@ -1,7 +1,9 @@
+import datetime
 from django.db import models
 from decimal import Decimal
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 class Inventory(models.Model):
     description = models.CharField(max_length=200)
@@ -202,6 +204,10 @@ class Order(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.DO_NOTHING)
     table_no = models.DecimalField(max_digits=2, decimal_places=0, default=0)
     completed = models.BooleanField(default=False)
+    order_time = models.DateTimeField()
+    completed_time = models.DateTimeField()
+    remarks = models.CharField('Remarks', max_length=254)
+
     # Order items shouldn't be deleted in the admin page,
     # we can delete the complete items automatically when payment is processed.
 
