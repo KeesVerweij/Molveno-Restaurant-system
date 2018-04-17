@@ -204,7 +204,7 @@ class Order(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.DO_NOTHING)
     table_no = models.DecimalField(max_digits=2, decimal_places=0, default=0)
     completed = models.BooleanField(default=False)
-    order_time = models.DateTimeField()
+    order_time = models.DateTimeField(default=datetime.datetime.now())
     completed_time = models.DateTimeField(null=True)
     remarks = models.CharField('Remarks', max_length=254)
 
