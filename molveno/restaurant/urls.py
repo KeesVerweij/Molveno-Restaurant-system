@@ -12,5 +12,6 @@ urlpatterns = [
     path('menuitem/<int:pk>/', views.MenuItemView.as_view(), name="menu_item"),
     path('addorder/<int:item_id>/', views.add_order_view, name="addorder"),
     path('orders/', views.orders_view, name="orders"),
-    path('menucard/<int:table_id>/', views.MenuCardList.as_view(), name="menucard")
+    path('menucard/<int:table_id>/', views.MenuCardList.as_view(), name="menucard"),
+    path('waiter/', views.request_waiter, name="waiter"),
 ]
