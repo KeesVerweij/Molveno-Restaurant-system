@@ -74,7 +74,7 @@ def complete_order(modeladmin, request, queryset):
 
 
 # provide a verbose desciption for the complete orders function
-complete_order.short_description = "mark orders as completed"
+complete_order.short_description = "Mark orders as 'Completed'"
 
 
 def uncomplete_order(modeladmin, request, queryset):
@@ -85,7 +85,7 @@ def uncomplete_order(modeladmin, request, queryset):
 
 
 # provide a verbose desciption for the complete orders function
-uncomplete_order.short_description = "mark orders as not completed"
+uncomplete_order.short_description = "Mark orders as 'Not completed'"
 
 
 class OrderAdmin(admin.ModelAdmin):
