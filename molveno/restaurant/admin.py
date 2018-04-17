@@ -89,8 +89,9 @@ uncomplete_order.short_description = "mark orders as not completed"
 
 class OrderAdmin(admin.ModelAdmin):
     # changes to the Orders overview page
-    list_display = ('menu_item', 'table_no', 'completed')
+    list_display = ('menu_item', 'table_no', 'order_time', 'completed', 'remarks', 'completed_time')
     # show custom action to complete orders
+
     actions = [complete_order, uncomplete_order]
 
     # def get_actions(self, request):
