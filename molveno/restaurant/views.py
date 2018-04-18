@@ -275,4 +275,6 @@ class DrinksList(TemplateView):
 
 
 def request_waiter(request):
-    return render(request,'restaurant/waiter.html')
+    table_id = request.session['table_id']
+    context = {"table_id":table_id}
+    return render(request,'restaurant/waiter.html',context)
