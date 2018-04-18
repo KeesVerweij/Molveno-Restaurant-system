@@ -170,7 +170,7 @@ def orders_view(request):
             if orders have been placed before
             '''
             order = request.session['order']
-            form = OrderForm(order, False)
+            form = OrderForm(order)
             context['orders'] = order
             context['form'] = form
         else:
@@ -219,7 +219,6 @@ class MenuCardList(TemplateView):
             c = MenuItemAddition.objects.filter(menu_item__course_type=i)
             course_type_lists.append(c)
 
-
         return course_type_lists
 
     def get_queryset_menus(self):
@@ -234,7 +233,7 @@ class MenuCardList(TemplateView):
             i += 1
             d = [m for m in menu.menu.menu_items.all()]
             # menu_courses_list.append(d)
-            #print(d)
+            # print(d)
         #print("menu course list:", menu_courses_list)
 
         # for menu in menus_courses_list:
@@ -279,10 +278,7 @@ class DrinksList(TemplateView):
         return context
 
 
-
-
-
 def request_waiter(request):
     table_id = request.session['table_id']
-    context = {"table_id":table_id}
-    return render(request,'restaurant/waiter.html',context)
+    context = {"table_id": table_id}
+    return render(request, 'restaurant/waiter.html', context)

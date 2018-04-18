@@ -11,13 +11,31 @@
   </ul>
 {% endif %}
 {% if orders %}
-  <form action="{% url 'restaurant:orders' %}" method="POST">
-    {% csrf_token %}
-    <div class='orderform'>
-      <p><table>
-          {{ form.as_table }}
-      </table></p>
-      <a href="{% url 'restaurant:menucard' table_id %}">order more <i>or</i></a><input type="submit" value="place order" style="float: right;"/>
+<form action="{% url 'restaurant:orders' %}" method="POST">
+  {% csrf_token %}
+  <div class='orderform'>
+    <p>
+      <table>
+        {% for field in form %}
+          <tr>
+            <div class="fieldWrapper">
+                {{ field.errors }}
+                <td style="float: right;">{{ field }}x</td><td>{{ field.label }}</td>
+                {% if field.help_text %}
+                <td>€{{ field.help_text|safe }}</td>
+                {% endif %}
+            </div>
+          </tr>
+        {% endfor %}
+        <tr>
+          <td><br></td>
+        </tr>
+        <tr>
+          <td><input type="submit" value="place order" style="float: right;"/></td>
+          <td><i>or </i><a href="{% url 'restaurant:menucard' table_id %}">order more</a></td>
+        </tr>
+      </table>
+    </p>
     </div>
   </form>
 {% endif %}

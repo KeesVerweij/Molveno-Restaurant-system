@@ -58,13 +58,13 @@ h1 {
 
 td {
     padding-left: 20px;
+    vertical-align: center;
 }
 
-th {
-  display: table-cell;
-  font-weight: lighter;
-  text-align: left;
-}
+/* label {
+  font-weight: normal;
+  vertical-align: center;
+} */
 
 h1.molvenobrush, .text-big {
   font-size: 40px;
