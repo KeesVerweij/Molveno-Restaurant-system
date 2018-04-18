@@ -1,0 +1,19 @@
+{% extends 'reservations/base.html' %}
+{% block page-title %}
+Reservation Confirmation
+{% endblock %}
+
+{% block content %}
+<p>
+  Thanks for your booking! It has been saved.
+</p>
+<p>
+If you would like to make any changes to your booking, please contact our restaurant:
+</p>
+<a href="molveno.lake.resort@gmail.com">molveno.lake.resort@gmail.com</a>
+<br />
+<p>
+  <a href="{% url 'reservations:index' %}"><button class="btn btn-primary">Back</button></a>
+</p>
+
+{% endblock %}
