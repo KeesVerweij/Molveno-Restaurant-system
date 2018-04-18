@@ -1,0 +1,51 @@
+{% load static  %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Reservations</title>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" type="text/css" href="{% static 'reservations/style/style.css' %}">
+
+  <script src="https://cdn.jsdelivr.net/npm/gijgo@1.9.6/js/gijgo.min.js" type="text/javascript"></script>
+
+  <link href="https://cdn.jsdelivr.net/npm/gijgo@1.9.6/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+  <div id="header">
+
+    <div class="col-md-10 no-padding" id="header-left">
+      {% block header-text-left %}
+      {% endblock %}
+    </div>
+    <div class="col-md-2 no-padding" id="header-right">
+      {% block header-text-right %}
+      {% endblock %}
+    </div>
+
+  </div>
+
+
+  <div class="main-content">
+
+    <div class="row">
+      <div class="col-md-12 no-padding">
+        <p id="pageTitle">
+          {% block page-title %}
+          {% endblock %}
+        </p>
+        {% block content %}
+        {% endblock %}
+      </div>
+      </div>
+
+  </div>
+
+  </div>
+</body>
+
+</html>

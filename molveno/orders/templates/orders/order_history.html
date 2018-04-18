@@ -1,0 +1,12 @@
+{% extends 'restaurant/base.html' %}
+
+{% block content %}
+
+<h1>Order History:</h1>
+
+{% for x in orderhist %}
+    <li>{{ x }}</li>
+{% endfor %}
+
+
+{% endblock %}
