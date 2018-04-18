@@ -17,24 +17,35 @@
       <p><table>
           {{ form.as_table }}
       </table></p>
-      <a href="{% url 'restaurant:menucard' table_id %}" style="padding-left:1.5em">order more <i>or</i></a><input type="submit" value="place order" style="float: right;"/>
+      <a href="{% url 'restaurant:menucard' table_id %}">order more <i>or</i></a><input type="submit" value="place order" style="float: right;"/>
     </div>
   </form>
 {% endif %}
-<p>
+<p><br />
 <p><b>Placed orders for your table:</b></p>
 {% if placed_orders %}
-<ul>
-  {% for item, amount in placed_orders.items %}
-  <li>{{amount}}x {{item}}
-  {% endfor %}
-</ul>
+  <table>
+    <ul>
+      {% for item, attributes in placed_orders.items %}
+        <tr>
+          <td><li>{{attributes.amount}}x {{item}}</td><td style="text-align: right;">€{{attributes.selling_price}}</td>
+        </tr>
+      {% endfor %}
+    </ul>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td><b>total:</b></td><td style="text-align: right;"><b>€{{total_pice}}</b></td>
+    </tr>
+  </table>
 {% else %}
 <ul>
   <li>No orders placed yet!
 </ul>
 {% endif %}
 </p>
-  <a href="{% url 'restaurant:menucard' table_id %}" style="padding-left:1.5em"><i>back to menu</i></a>
+
+<a href="{% url 'restaurant:menucard' table_id %}"><i>back to menu</i></a>
 
 {% endblock %}
