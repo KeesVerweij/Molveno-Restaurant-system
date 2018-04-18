@@ -25,7 +25,7 @@ SECRET_KEY = '(x%q)lqnsiboa05f)$!ymln%%s_0z360c6^4p6l0*ain7rq9^g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['keess-mbp', '127.0.0.1']
 
 
 # Application definition
@@ -56,7 +56,7 @@ ROOT_URLCONF = 'molveno.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],        #use for costum templates
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # use for costum templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
