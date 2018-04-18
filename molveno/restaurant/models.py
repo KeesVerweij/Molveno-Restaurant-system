@@ -72,12 +72,12 @@ class CourseType(models.Model):
 
 class MenuItem(models.Model):
     name = models.CharField(max_length=128)
-    description = models.CharField(max_length=2000)
+    description = models.CharField(max_length=2000, blank = True)
     menu_item_type = models.ForeignKey('MenuItemType',
                                        on_delete=models.PROTECT)
     course_type = models.ForeignKey('CourseType',
                                     on_delete=models.PROTECT)
-    recipe = models.TextField()
+    recipe = models.TextField(blank = True)
 
     def __str__(self):
         return self.name + ' (' + str(self.course_type) + '), Suggested selling price: €' + str(self.suggested_selling_price) + ')'
