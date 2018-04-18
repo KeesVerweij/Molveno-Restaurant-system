@@ -1,7 +1,7 @@
 import datetime
 from django.db import models
 from decimal import Decimal
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.utils import timezone
 
@@ -129,12 +129,6 @@ class Ingredient(models.Model):
     def __str__(self):
         return self.menu_item.name
 
-    # def _get_amount_price(self):
-    #     if self.amount:
-    #         r = round(((self.ingredient.price / self.ingredient.container_amount) * self.amount), 2)
-    #         return r
-    # amount_price = property(_get_amount_price)
-
 
 class Supplier(models.Model):
     name = models.CharField("Supplier Name", max_length=200)
@@ -172,7 +166,6 @@ class MenuCard(models.Model):
 class MenuItemAddition(models.Model):
     menu_card = models.ForeignKey(MenuCard, on_delete=models.CASCADE)
     menu_item = models.ForeignKey(MenuItem, on_delete=models.PROTECT)
-    #suggested_selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0, editable=False)
     selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
@@ -182,14 +175,10 @@ class MenuItemAddition(models.Model):
         verbose_name = 'Menu Item'
         verbose_name_plural = 'Menu items'
 
-# @receiver(pre_save, sender='MenuItemAddition')
-# def show_suggested_price(sender, **kwargs):
-
 
 class MenuAddition(models.Model):
     menu_card = models.ForeignKey(MenuCard, on_delete=models.CASCADE)
     menu = models.ForeignKey(Menu, on_delete=models.PROTECT)
-    # suggested_selling_price = models.DecimalField(max_digits=5, decimal_places=2, default-0, editable=False)
     selling_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def __str__(self):
@@ -213,3 +202,39 @@ class Order(models.Model):
 
     def __str__(self):
         return str(self.menu_item.name)
+
+@receiver(post_save, sender=Order)
+def update_inventory(sender, instance, created, **kwargs):
+    if created:
+        allingredients = Ingredient.objects.filter(menu_item__in=MenuItem.objects.filter(name = instance.menu_item.name))
+        for ingred in allingredients:
+            if ingred.unit == 'KG' or ingred.unit == 'L' or ingred.unit == 'PCS':
+                inv = Inventory.objects.get(description=ingred.ingredient.description)
+                inv.current_stock -= ingred.amount
+                inv.save()
+            if ingred.unit == 'G' or ingred.unit == 'ML':
+                inv = Inventory.objects.get(description=ingred.ingredient.description)
+                inv.current_stock -= ingred.amount/1000
+                inv.save()
+            else:
+                inv = Inventory.objects.get(description=ingred.ingredient.description)
+                inv.current_stock -= ingred.amount/1000000
+                inv.save()
+
+@receiver(pre_delete, sender=Order)
+def restore_inventory(sender, instance, **kwargs):
+    if instance.completed == False:
+        allingredients = Ingredient.objects.filter(menu_item__in=MenuItem.objects.filter(name = instance.menu_item.name))
+        for ingred in allingredients:
+            if ingred.unit == 'KG' or ingred.unit == 'L' or ingred.unit == 'PCS':
+                inv = Inventory.objects.get(description=ingred.ingredient.description)
+                inv.current_stock += ingred.amount
+                inv.save()
+            if ingred.unit == 'G' or ingred.unit == 'ML':
+                inv = Inventory.objects.get(description=ingred.ingredient.description)
+                inv.current_stock += ingred.amount/1000
+                inv.save()
+            else:
+                inv = Inventory.objects.get(description=ingred.ingredient.description)
+                inv.current_stock += ingred.amount/1000000
+                inv.save()
