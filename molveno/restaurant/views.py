@@ -127,7 +127,8 @@ def orders_view(request):
                 order_item = get_object_or_404(MenuItem, name=item)
                 table_id = request.session['table_id']
                 for orders in range(int(amount)):
-                    order = Order(menu_item=order_item, table_no=table_id)
+                    order = Order(menu_item=order_item, table_no=table_id,
+                                  order_time=datetime.datetime.now())
                     try:
                         order.save()
                     except Exception as e:
@@ -179,16 +180,23 @@ def orders_view(request):
                 del request.session['orderplaced']
                 request.session.modified = True
 
-        # placed_orders = Order.objects.filter(table_no=table_id).values(
-        #     'menu_item').annotate(amount=Count('menu_item'))
         get_orders = Order.objects.filter(
             table_no=table_id)
         if(get_orders):
-            print("hi")
-            order_list = [n.menu_item.name for n in get_orders]
-            placed_orders = {n: order_list.count(n) for n in order_list}
-            print(placed_orders)
+            placed_orders = dict()
+            total_price = 0
+            for order in get_orders:
+                item_name = order.menu_item.name
+                price_addition = MenuItemAddition.objects.filter(menu_item=order.menu_item)
+                selling_price = price_addition.values_list('selling_price', flat=True)[0]
+                total_price += selling_price
+                if item_name not in placed_orders:
+                    placed_orders[item_name] = {'selling_price': selling_price, 'amount': 1}
+                else:
+                    placed_orders[item_name]['amount'] += 1
+                    placed_orders[item_name]['selling_price'] += selling_price
             context['placed_orders'] = placed_orders
+            context['total_pice'] = total_price
 
         context['table_id'] = table_id
         return render(request, 'restaurant/orders.html', context)
