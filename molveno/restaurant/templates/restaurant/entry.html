@@ -1,0 +1,20 @@
+{% extends 'restaurant/base.html' %}
+
+{% block content %}
+<div class="text-right">
+  <div class="molvenobrush text-medium"> Table number: {{table_id}}</div>
+  <a href="{% url 'restaurant:orders' %}">My orders</a>
+</div>
+  <h1 class="molvenobrush">What would you like to drink?</h1>
+<ul>
+  {%for drink in drinks_list%}
+    <li class="no-bullets">
+        <h3 class="molvenobrush">
+          <a href="{% url 'restaurant:menu_item' drink.menu_item.id %}">{{drink.menu_item.name}}</a>
+          <span> € {{drink.selling_price}}</span>
+        </h3>
+    </li>
+  {% endfor %}
+</ul>
+</div>
+{% endblock %}

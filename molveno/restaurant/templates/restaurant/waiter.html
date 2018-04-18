@@ -28,7 +28,8 @@
 
 {% block content %}
   <h3 class="molvenobrush main-content">Your waiter will be with you shortly!</h3>
+  <br><br>
+  <a href="{% url 'restaurant:menucard' table_id %}" style="padding-left:1.5em"><i>back to menu</i></a>
 {% endblock %}
-
 </body>
 </html>

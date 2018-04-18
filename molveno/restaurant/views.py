@@ -216,13 +216,9 @@ class MenuCardList(TemplateView):
         i = 0
         for course_type in course_types:
             i += 1
-            # print('current course type: ', course_type)
             c = MenuItemAddition.objects.filter(menu_item__course_type=i)
             course_type_lists.append(c)
-            # for dish in c:
-            #     course_type_lists.append(dish)
-            #     print(dish.menu_item)
-            #     print(dish.selling_price)
+
 
         return course_type_lists
 
@@ -233,14 +229,13 @@ class MenuCardList(TemplateView):
         menus = self.get_queryset_menus()
 
         menu_courses_list = []
-        print("hello")
         i = 0
         for menu in menus:
             i += 1
             d = [m for m in menu.menu.menu_items.all()]
             # menu_courses_list.append(d)
-            print(d)
-        print("menu course list:", menu_courses_list)
+            #print(d)
+        #print("menu course list:", menu_courses_list)
 
         # for menu in menus_courses_list:
         #     courses = self.get_course_types()
@@ -258,7 +253,7 @@ class MenuCardList(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['menucard_list'] = self.get_queryset_items()
-        context["course_types"] = self.get_course_types()
+        context['course_types'] = self.get_course_types()
         context['menu_types'] = self.get_queryset_menus()
         context['table_id'] = self.get_table_id()
         context['menu_courses'] = self.get_menu_items_on_menus()
@@ -266,5 +261,28 @@ class MenuCardList(TemplateView):
         return context
 
 
+class DrinksList(TemplateView):
+    template_name = "restaurant/entry.html"
+
+    def get_drinks_query(self):
+        drinks_list = MenuItemAddition.objects.filter(menu_item__menu_item_type=4)
+        return drinks_list
+
+    def get_table_id(self, **kwargs):
+        table_id = self.kwargs['table_id']
+        return table_id
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['drinks_list'] = self.get_drinks_query()
+        self.request.session['table_id'] = self.get_table_id()
+        return context
+
+
+
+
+
 def request_waiter(request):
-    return render(request, 'restaurant/waiter.html')
+    table_id = request.session['table_id']
+    context = {"table_id":table_id}
+    return render(request,'restaurant/waiter.html',context)
