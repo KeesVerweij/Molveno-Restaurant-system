@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('restaurant.urls')),
     path('reservations/', include('reservations.urls')),
+    path('orders/', include('orders.urls')),
 ]
 
 admin.site.site_header = settings.ADMIN_SITE_HEADER
