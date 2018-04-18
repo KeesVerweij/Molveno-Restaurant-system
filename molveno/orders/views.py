@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.base import TemplateView
 from django.views import generic
-from .forms import MenuItemForm, OrderForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.apps import apps
