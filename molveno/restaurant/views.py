@@ -228,22 +228,18 @@ class MenuCardList(TemplateView):
         menus = self.get_queryset_menus()
 
         menu_courses_list = []
-        i = 0
+        menu_dict={}
         for menu in menus:
-            i += 1
-            d = [m for m in menu.menu.menu_items.all()]
-            # menu_courses_list.append(d)
-            # print(d)
-        #print("menu course list:", menu_courses_list)
+            d = [m.name for m in menu.menu.menu_items.all()]
+            #menu_courses_list.append(d)
+            menu_dict[menu]=d
 
-        # for menu in menus_courses_list:
-        #     courses = self.get_course_types()
-        #     for dish in menu:
-        #         # sort the list based on course type
-        #         pass
-        #     pass
 
-        return d
+            print(d)
+            print(menu_dict)
+
+
+        return menu_dict
 
     def get_table_id(self, **kwargs):
         table_id = self.kwargs['table_id']
@@ -256,6 +252,7 @@ class MenuCardList(TemplateView):
         context['menu_types'] = self.get_queryset_menus()
         context['table_id'] = self.get_table_id()
         context['menu_courses'] = self.get_menu_items_on_menus()
+
         self.request.session['table_id'] = self.get_table_id()
         return context
 
