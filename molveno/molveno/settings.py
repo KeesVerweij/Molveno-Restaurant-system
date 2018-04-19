@@ -25,7 +25,7 @@ SECRET_KEY = '(x%q)lqnsiboa05f)$!ymln%%s_0z360c6^4p6l0*ain7rq9^g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['keess-mbp', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

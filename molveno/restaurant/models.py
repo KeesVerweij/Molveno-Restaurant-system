@@ -72,12 +72,12 @@ class CourseType(models.Model):
 
 class MenuItem(models.Model):
     name = models.CharField(max_length=128)
-    description = models.CharField(max_length=2000, blank = True)
+    description = models.CharField(max_length=2000, blank=True)
     menu_item_type = models.ForeignKey('MenuItemType',
                                        on_delete=models.PROTECT)
     course_type = models.ForeignKey('CourseType',
                                     on_delete=models.PROTECT)
-    recipe = models.TextField(blank = True)
+    recipe = models.TextField(blank=True)
 
     def __str__(self):
         return self.name + ' (' + str(self.course_type) + '), Suggested selling price: €' + str(self.suggested_selling_price) + ')'
@@ -203,10 +203,12 @@ class Order(models.Model):
     def __str__(self):
         return str(self.menu_item.name)
 
+
 @receiver(post_save, sender=Order)
 def update_inventory(sender, instance, created, **kwargs):
     if created:
-        allingredients = Ingredient.objects.filter(menu_item__in=MenuItem.objects.filter(name = instance.menu_item.name))
+        allingredients = Ingredient.objects.filter(
+            menu_item__in=MenuItem.objects.filter(name=instance.menu_item.name))
         for ingred in allingredients:
             if ingred.unit == 'KG' or ingred.unit == 'L' or ingred.unit == 'PCS':
                 inv = Inventory.objects.get(description=ingred.ingredient.description)
@@ -221,10 +223,12 @@ def update_inventory(sender, instance, created, **kwargs):
                 inv.current_stock -= ingred.amount/1000000
                 inv.save()
 
+
 @receiver(pre_delete, sender=Order)
 def restore_inventory(sender, instance, **kwargs):
     if instance.completed == False:
-        allingredients = Ingredient.objects.filter(menu_item__in=MenuItem.objects.filter(name = instance.menu_item.name))
+        allingredients = Ingredient.objects.filter(
+            menu_item__in=MenuItem.objects.filter(name=instance.menu_item.name))
         for ingred in allingredients:
             if ingred.unit == 'KG' or ingred.unit == 'L' or ingred.unit == 'PCS':
                 inv = Inventory.objects.get(description=ingred.ingredient.description)
