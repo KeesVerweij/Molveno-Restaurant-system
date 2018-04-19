@@ -29,21 +29,23 @@
 
     <div id="menus">
       <li class="no-bullets"> <h2 class="molvenobrush">Menus</h2></li>
-      <ul>
-        {% for type in menu_types %}
-        <li class="no-bullets">
+      <div id="try">
+        <ul>
+        {% for key,value in menu_courses.items %}
+          <li class="no-bullets">
           <h3 class="molvenobrush">
-            <span> {{type.menu.name}}</span>
-            <span> € {{type.selling_price}}</span>
-          </h3>
+          <span>{{ key.menu.name }}</span>
+          <span> €{{key.selling_price}}</span></li></h3>
           <ul>
-            {% for d in menu_courses %}
-            <li>{{d.name}}</li>
-            {% endfor %}</ul>
-        </li>
-
+            {% for v in value%}
+              <li class="no-bullets">
+                {{v}}
+              </li>
+            {% endfor %}
+          </ul>
         {% endfor %}
       </ul>
     </div>
+
   </div>
 {% endblock %}

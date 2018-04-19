@@ -3,7 +3,7 @@
 {% block content %}
 <div class="text-right">
   <div class="molvenobrush text-medium"> Table number: {{table_id}}</div>
-  <a href="{% url 'restaurant:orders' %}">My orders</a>
+  <a href="{% url 'restaurant:menucard' table_id %}" style="padding-left:1.5em">Menu Card</a>
 </div>
   <h1 class="molvenobrush">What would you like to drink?</h1>
 <ul>
