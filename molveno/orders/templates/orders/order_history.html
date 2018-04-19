@@ -1,12 +1,36 @@
-{% extends 'restaurant/base.html' %}
+{% extends 'orders/base.html' %}
+{% block header-text-left %}
+Molveno
+{% endblock %}
+
+{% block page-title %}
+Order History:
+{% endblock %}<br>
 
 {% block content %}
+ {% if complete_order_list %}
 
-<h1>Order History:</h1>
+  <table id="orderstable">
+    <tr>
+      <th>Order item</th>
+      <th>Table number</th>
+      <th>Time order placed</th>
+      <th>Time order completed</th>
+    </tr>
+    {% for item in complete_order_list %}
+    <tr>
+      <td>{{ item }}</td>
+      <td>{{ item.table_no }}</td>
+      <td>{{ item.order_time }}</td>
+      <td>{{ item.completed_time }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <br>
+ {% else %}
+    <p> No completed Orders in History.</p>
+ {% endif %}
 
-{% for x in orderhist %}
-    <li>{{ x }}</li>
-{% endfor %}
-
+<p><INPUT TYPE="button" VALUE="BACK" OnClick="history.go( -1 );return true;"></p>
 
 {% endblock %}

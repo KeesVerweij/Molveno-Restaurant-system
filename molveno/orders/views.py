@@ -6,12 +6,13 @@ from django.urls import reverse
 from django.apps import apps
 from django.contrib.admin.sites import AlreadyRegistered
 from django.contrib import admin, auth, messages
-from .models import *
+from restaurant.models import *
 from django.forms import ModelForm
-# Create your views here.
 
 
-def order_history_view(request):
-    orderhist = [item.menu_item for item in Order.objects.filter(completed=True)]       #if item.completed('True')
-    print('Orderhistory: ', orderhist)
-    return render(request,'restaurant/order_history.html',{'orderhist': orderhist})
+class OrderHistoryView(generic.ListView):
+    template_name = 'orders/order_history.html'
+    context_object_name = 'complete_order_list'
+
+    def get_queryset(self):
+        return Order.objects.all().filter(completed=True)

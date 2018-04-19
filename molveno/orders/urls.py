@@ -4,5 +4,5 @@ from . import views
 app_name = 'orders'
 
 urlpatterns = [
-    path('order_history',views.order_history_view, name = 'order_history'),
+    path('order_history/',views.OrderHistoryView.as_view(), name = 'order_history'),
 ]
