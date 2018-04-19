@@ -170,18 +170,32 @@ def orders_view(request):
             if orders have been placed before
             '''
             order = request.session['order']
-            form = OrderForm(order)
+            '''
+            get the combined price for the amount of menu items (eg 3x carpaccio = €27 total) as
+            well as the overall totall of all orders and put them in a dictionary to be passed to
+            the form {menu_item: {'price': price, 'amount': amount}, ... }
+            '''
+            total = 0
+            form_data = dict()
+            for item in order:
+                amount = order[item]
+                # print('AMOUNT: ' + str(amount))
+                item_id = MenuItem.objects.values().filter(name=item)[0]['id']
+                item_price = MenuItemAddition.objects.values().filter(menu_item=item_id)[
+                    0]['selling_price']
+                combined_price = item_price * amount
+                form_data[item] = {'amount': amount, 'price': str(combined_price)}
+                total += combined_price
+            form = OrderForm(form_data)
             context['orders'] = order
+            context['total'] = total
             context['form'] = form
         else:
-            if not request.session.get('orderplaced'):
-                messages.info(request, "no items added to your order yet!")
-            else:
+            if request.session.get('orderplaced'):
                 del request.session['orderplaced']
                 request.session.modified = True
 
-        get_orders = Order.objects.filter(
-            table_no=table_id)
+        get_orders = Order.objects.filter(table_no=table_id)
         if(get_orders):
             placed_orders = dict()
             total_price = 0
@@ -234,7 +248,7 @@ class MenuCardList(TemplateView):
             d = [m for m in menu.menu.menu_items.all()]
             # menu_courses_list.append(d)
             # print(d)
-        #print("menu course list:", menu_courses_list)
+        # print("menu course list:", menu_courses_list)
 
         # for menu in menus_courses_list:
         #     courses = self.get_course_types()
