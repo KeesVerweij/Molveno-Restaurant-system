@@ -1,0 +1,26 @@
+{% extends 'restaurant/base.html' %}
+{% block content %}
+<h1>{{ menu.menu.name }}</h1><br>
+<b>price: €{{ menu.selling_price }}</b></br>
+<form action="{% url 'restaurant:add-order-menu' menu.id %}" method="POST">
+  {% csrf_token %}
+  <div class='orderform'>
+  <p><table>{{ form.as_table }}</table></p>
+  <input type="submit" value="add to order" style="float: right;" />
+</div>
+</form>
+<i>contains:</i>
+<p>
+{% for menu_item in menu.menu.menu_items.all %}
+<p>
+  <b>{{ menu_item.name }}</b><br>
+  <i>ingredients:</i><br>
+  <ul>
+    {% for ingredient in menu_item.ingredient_set.all %}
+      <li>{{ingredient.ingredient.description}}<br />
+    {% endfor %}
+  </ul>
+</p>
+{% endfor %}
+</p>
+{% endblock %}

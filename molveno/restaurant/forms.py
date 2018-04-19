@@ -10,6 +10,11 @@ class MenuItemForm(forms.Form):
         'min': '1', 'max': '10', 'type': 'number', 'placeholder': '1'}))
 
 
+class MenuForm(forms.Form):
+    order_amount = forms.CharField(widget=TextInput(attrs={
+        'min': '1', 'max': '10', 'type': 'number', 'placeholder': '1'}))
+
+
 class OrderForm(forms.Form):
     def __init__(self, orders, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)

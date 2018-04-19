@@ -11,7 +11,9 @@ urlpatterns = [
     path('restaurant/supplier/add/', views.SupplierAddView.as_view(), name="supplier-add-view"),
     path('menuitem/<int:pk>/', views.MenuItemView.as_view(), name="menu_item"),
     path('addorder/<int:item_id>/', views.add_order_view, name="addorder"),
+    path('addordermenu/<int:item_id>/', views.AddOrderMenu.as_view(), name="add-order-menu"),
     path('orders/', views.orders_view, name="orders"),
     path('menucard/<int:table_id>/', views.MenuCardList.as_view(), name="menucard"),
     path('waiter/', views.request_waiter, name="waiter"),
+    path('menu/<int:pk>/', views.MenuView.as_view(), name="menu")
 ]

@@ -33,7 +33,7 @@
         {% for type in menu_types %}
         <li class="no-bullets">
           <h3 class="molvenobrush">
-            <span> {{type.menu.name}}</span>
+            <span> <a href="{% url 'restaurant:menu' type.id %}">{{type.menu.name}}</a></span>
             <span> € {{type.selling_price}}</span>
           </h3>
           <ul>

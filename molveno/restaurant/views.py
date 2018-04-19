@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.base import TemplateView
-from django.views import generic
-from .forms import MenuItemForm, OrderForm
+from django.views import generic, View
+from .forms import MenuItemForm, OrderForm, MenuForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.apps import apps
@@ -25,17 +25,20 @@ class IndexView(TemplateView):
     # get overview of all models in our app
     restaurant_app = apps.get_app_config('restaurant')
     restaurant_app_models = restaurant_app.models.values()
-    restaurant_app_model_names = [model._meta.verbose_name for model in restaurant_app_models]
+    restaurant_app_model_names = [
+        model._meta.verbose_name for model in restaurant_app_models]
 
     # comes out e.g. as 'restaurant.menu_menu_items'
-    model_short_names = [model._meta.label_lower for model in restaurant_app_models]
+    model_short_names = [
+        model._meta.label_lower for model in restaurant_app_models]
 
     # admin.site._registry is a dictionary with all registered tables
-    registered_model_names = [key._meta.verbose_name.capitalize() for key in admin.site._registry]
+    registered_model_names = [
+        key._meta.verbose_name.capitalize() for key in admin.site._registry]
 
     # replace the dot after the app prefix with a slash, for the url
     model_short_names_as_links = [
-        'management/'+short_name.replace('restaurant.', 'restaurant/') + '/' for short_name in model_short_names]
+        'management/' + short_name.replace('restaurant.', 'restaurant/') + '/' for short_name in model_short_names]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -108,7 +111,8 @@ def add_order_view(request, item_id):
         form = MenuItemForm(request.POST)
         if form.is_valid():
             order_amount = int(form.cleaned_data['order_amount'])
-            request.session['order_item'] = {'id': item_id, 'amount': order_amount}
+            request.session['order_item'] = {
+                'id': item_id, 'amount': order_amount}
             return HttpResponseRedirect(reverse('restaurant:orders'))
         else:
             return HttpResponse("Oops! something went wrong!")
@@ -116,8 +120,22 @@ def add_order_view(request, item_id):
         return HttpResponse("Oops! something went wrong!")
 
 
+class AddOrderMenu(View):
+    def get(self, request, *args, **kwargs):
+        '''
+        if request method is GET
+        '''
+        pass
+
+    def post(self, request, *args, **kwargs):
+        '''
+        if request method is POST
+        '''
+        return HttpResponseRedirect(reverse('restaurant:orders'))
+
+
 def orders_view(request):
-    table_id = request.session['table_id']
+    table_id = request.session['table_id']  # THIS GIVES AN ERROR WHEN THERE IS NO TABLE ID!
     if request.method == 'POST':
         # if form is submitted, save orders to databaseself.
         message = ""
@@ -133,7 +151,8 @@ def orders_view(request):
                         order.save()
                     except Exception as e:
                         print(e)
-                        messages.error(request, 'There was a problem, your order was not places!')
+                        messages.error(
+                            request, 'There was a problem, your order was not places!')
                         return HttpResponseRedirect(reverse('restaurant:orders'))
         request.session['orderplaced'] = True
         del request.session['order']
@@ -150,9 +169,11 @@ def orders_view(request):
             if request.session.get('order'):
                 order = request.session['order']
                 if item.name in order:
-                    messages.success(request, 'Your order was updated succesfully!')
+                    messages.success(
+                        request, 'Your order was updated succesfully!')
                 else:
-                    messages.success(request, 'Your order was added succesfully!')
+                    messages.success(
+                        request, 'Your order was added succesfully!')
                 order[item.name] = order_item['amount']
                 request.session['order'] = order
 
@@ -184,7 +205,8 @@ def orders_view(request):
                 item_price = MenuItemAddition.objects.values().filter(menu_item=item_id)[
                     0]['selling_price']
                 combined_price = item_price * amount
-                form_data[item] = {'amount': amount, 'price': str(combined_price)}
+                form_data[item] = {'amount': amount,
+                                   'price': str(combined_price)}
                 total += combined_price
             form = OrderForm(form_data)
             context['orders'] = order
@@ -201,11 +223,14 @@ def orders_view(request):
             total_price = 0
             for order in get_orders:
                 item_name = order.menu_item.name
-                price_addition = MenuItemAddition.objects.filter(menu_item=order.menu_item)
-                selling_price = price_addition.values_list('selling_price', flat=True)[0]
+                price_addition = MenuItemAddition.objects.filter(
+                    menu_item=order.menu_item)
+                selling_price = price_addition.values_list(
+                    'selling_price', flat=True)[0]
                 total_price += selling_price
                 if item_name not in placed_orders:
-                    placed_orders[item_name] = {'selling_price': selling_price, 'amount': 1}
+                    placed_orders[item_name] = {
+                        'selling_price': selling_price, 'amount': 1}
                 else:
                     placed_orders[item_name]['amount'] += 1
                     placed_orders[item_name]['selling_price'] += selling_price
@@ -274,11 +299,28 @@ class MenuCardList(TemplateView):
         return context
 
 
+class MenuView(TemplateView):
+    template_name = 'restaurant/menu.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        menu_id = context['pk']
+        menu = self.get_menu(menu_id)[0]
+        form = MenuForm()
+        context['form'] = form
+        context['menu'] = menu
+        return context
+
+    def get_menu(self, pk):
+        return MenuAddition.objects.filter(menu=pk)
+
+
 class DrinksList(TemplateView):
     template_name = "restaurant/entry.html"
 
     def get_drinks_query(self):
-        drinks_list = MenuItemAddition.objects.filter(menu_item__menu_item_type=4)
+        drinks_list = MenuItemAddition.objects.filter(
+            menu_item__menu_item_type=4)
         return drinks_list
 
     def get_table_id(self, **kwargs):
