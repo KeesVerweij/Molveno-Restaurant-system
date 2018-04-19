@@ -3,17 +3,17 @@
 {% block content %}
 
 <h1>My orders for table {{table_id}}:</h1>
-{% if messages %}
-  <ul class="messages">
-    {% for message in messages %}
-      <li class="{{ message.tags }}">{{ message }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
-{% if orders %}
-<form action="{% url 'restaurant:orders' %}" method="POST">
+<div class='orderform'>
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% if orders %}
+  <form action="{% url 'restaurant:orders' %}" method="POST">
   {% csrf_token %}
-  <div class='orderform'>
     <p>
       <table>
         {% for field in form %}
@@ -31,39 +31,41 @@
           <td><br></td>
         </tr>
         <tr>
+          <td></td><td><b style="float: right;">total:</b></td><td><b>€{{total}}</b></td>
+        </tr>
+        <tr>
+          <td><br></td>
+        </tr>
+        <tr>
           <td><input type="submit" value="place order" style="float: right;"/></td>
           <td><i>or </i><a href="{% url 'restaurant:menucard' table_id %}">order more</a></td>
         </tr>
       </table>
     </p>
-    </div>
   </form>
-{% endif %}
-<p><br />
-<p><b>Placed orders for your table:</b></p>
-{% if placed_orders %}
-  <table>
-    <ul>
-      {% for item, attributes in placed_orders.items %}
-        <tr>
-          <td><li>{{attributes.amount}}x {{item}}</td><td style="text-align: right;">€{{attributes.selling_price}}</td>
-        </tr>
-      {% endfor %}
-    </ul>
-    <tr>
-      <td><br></td>
-    </tr>
-    <tr>
-      <td><b>total:</b></td><td style="text-align: right;"><b>€{{total_pice}}</b></td>
-    </tr>
-  </table>
-{% else %}
-<ul>
-  <li>No orders placed yet!
-</ul>
-{% endif %}
-</p>
-
-<a href="{% url 'restaurant:menucard' table_id %}"><i>back to menu</i></a>
-
+  {% endif %}
+  <p><br />
+  <p><b>Placed orders for your table:</b></p>
+  {% if placed_orders %}
+    <table style="float: right;">
+        {% for item, attributes in placed_orders.items %}
+          <tr>
+            <td>{{attributes.amount}}x {{item}}</td><td style="text-align: right;">€{{attributes.selling_price}}</td>
+          </tr>
+        {% endfor %}
+      <tr>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td style="float: right;"><b>total:</b></td><td style="text-align: right;"><b>€{{total_pice}}</b></td>
+      </tr>
+    </table>
+  {% else %}
+  <ul>
+    <li>No orders placed yet!
+  </ul>
+  {% endif %}
+  </p>
+</div>
+<p><a href="{% url 'restaurant:menucard' table_id %}"><i>back to menu</i></a></p>
 {% endblock %}
