@@ -1,0 +1,18 @@
+{% extends 'orders/base.html' %}
+
+{% block header-text-left %}
+Molveno
+{% endblock %}
+
+{% block page-title %}
+Orders
+{% endblock %}
+
+
+{% block content %}
+
+<a href="{% url 'orders:food_orders' %}" id="indexbutton">View ordered food</a><br>
+<a href="{% url 'orders:drink_orders' %}" id="indexbutton">View ordered drinks</a><br>
+<a href="{% url 'orders:order_history' %}" id="indexbutton">View order history</a>
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'orders/base.html' %}
+
+{% block header-text-left %}
+Molveno
+{% endblock %}
+
+{% block page-title %}
+Recipe for {{menuitem}}
+{% endblock %}
+
+{% block content %}
+
+{{recipe}}<br><br>
+
+<h5>Ingredients</h5>
+<table id="orderstable">
+  <tr>
+    <th>Ingredient</th>
+    <th>Amount</th>
+    <th>Unit</th>
+  </tr>
+  {% for x in ingredients %}
+  <tr>
+    <td> {{ x.ingredient.description }}</td>
+    <td> {{ x.amount }}</td>
+    <td> {{ x.unit }}</td>
+  </tr>
+  {% endfor %}
+</table><br>
+
+<p>
+  <input type="button" value="Back" id="backbutton" OnClick="history.go(-1);return true;">
+</p>
+
+{% endblock %}
