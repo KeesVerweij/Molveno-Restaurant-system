@@ -4,7 +4,7 @@ Molveno
 {% endblock %}
 
 {% block page-title %}
-Order History:
+Order History
 {% endblock %}<br>
 
 {% block content %}
@@ -21,8 +21,8 @@ Order History:
     <tr>
       <td>{{ item }}</td>
       <td>{{ item.table_no }}</td>
-      <td>{{ item.order_time }}</td>
-      <td>{{ item.completed_time }}</td>
+      <td>{{ item.order_time|date:'d-m-Y H:i' }}</td>
+      <td>{{ item.completed_time|date:'d-m-Y H:i' }}</td>
     </tr>
     {% endfor %}
   </table>
@@ -31,6 +31,6 @@ Order History:
     <p> No completed Orders in History.</p>
  {% endif %}
 
-<p><INPUT TYPE="button" VALUE="BACK" OnClick="history.go( -1 );return true;"></p>
+<p><INPUT TYPE="button" VALUE="Back" id="backbutton" OnClick="history.go( -1 );return true;"></p>
 
 {% endblock %}

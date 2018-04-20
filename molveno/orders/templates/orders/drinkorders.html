@@ -1,0 +1,45 @@
+{% extends 'orders/base.html' %}
+
+{% block head %}
+<meta http-equiv="refresh" content="15"/>
+{% endblock %}
+
+{% block header-text-left %}
+Molveno
+{% endblock %}
+
+
+{% block page-title %}
+Drink Orders
+{% endblock %}<br>
+
+{% block content %}
+
+{% if drink_orders %}
+  <table id="orderstable">
+    <tr>
+      <th>Item</th>
+      <th>Table Number</th>
+      <th>Time of order</th>
+      <th>Remarks</th>
+      <th>Recipe</th>
+    </tr>
+    {% for x in drink_orders %}
+    <tr>
+      <td> {{ x.menu_item.name }}</td>
+      <td> {{ x.table_no }}</td>
+      <td> {{ x.order_time }}</td>
+      <td> {{ x.remarks }}</td>
+      <td> <a href="{% url 'orders:recipe' x.menu_item.id %}">View recipe</a> </td>
+    </tr>
+    {% endfor %}
+  </table><br>
+{% else %}
+  <p>There are no orders available.</p>
+{% endif %}
+
+<p>
+  <input type="button" value="Back" id="backbutton" OnClick="history.go(-1);return true;">
+</p>
+
+{% endblock %}
