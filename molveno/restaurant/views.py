@@ -106,18 +106,26 @@ class MenuItemView(generic.DetailView):
         return context
 
 
-def add_order_view(request, item_id):
-    if request.method == 'POST':
+class AddOrderItem(View):
+    def get(self, request, *args, **kwargs):
+        '''
+        if request method is GET (e.g. someone typed in the url directely), redirect to orderpage
+        with a warning
+        '''
+        messages.warning(request, 'you have not selected an order amount')
+        return HttpResponseRedirect(reverse('restaurant:orders'))
+
+    def post(self, request, item_id, *args, **kwargs):
+        '''
+        if request method is POST add menu item to orders
+        '''
         form = MenuItemForm(request.POST)
         if form.is_valid():
             order_amount = int(form.cleaned_data['order_amount'])
-            request.session['order_item'] = {
-                'id': item_id, 'amount': order_amount}
+            request.session['order_item'] = {'id': item_id, 'amount': order_amount}
             return HttpResponseRedirect(reverse('restaurant:orders'))
         else:
             return HttpResponse("Oops! something went wrong!")
-    else:
-        return HttpResponse("Oops! something went wrong!")
 
 
 class AddOrderMenu(View):
@@ -129,122 +137,151 @@ class AddOrderMenu(View):
         messages.warning(request, 'you have not selected an order amount')
         return HttpResponseRedirect(reverse('restaurant:orders'))
 
+    def post(self, request, menu_id, *args, **kwargs):
+        '''
+        if request method is POST add menu to orders
+        '''
+        form = MenuForm(request.POST)
+        if form.is_valid():
+            order_amount = int(form.cleaned_data['order_amount'])
+            request.session['order_menu'] = {'id': menu_id, 'amount': order_amount}
+        else:
+            messages.warning(request, "that's not a valid input!")
+        return HttpResponseRedirect(reverse('restaurant:orders'))
+
+
+class OrdersView(View):
+
+    def get(self, request, *args, **kwargs):
+        '''
+        if request method is GET render the orders page
+        '''
+        table_id = self.get_table_id(request)
+
+        context = {}
+        if request.session.get('order_item'):
+            # if there is an order add it to the order list
+            order_item = request.session['order_item']
+            item = get_object_or_404(MenuItem, pk=order_item['id'])
+            if request.session.get('order'):
+                '''
+                if there is an orders list and this item is already in the list,
+                update it's entry in the orders list (session variable, dictionary)
+                '''
+                order = request.session['order']
+                if item.name in order:
+                    messages.success(
+                        request, 'Your order was updated succesfully!')
+                else:
+                    '''
+                    if there is an order list but this item is not yet in it, add it to the the
+                    orders list (session variable, dictionary)
+                    '''
+                    messages.success(
+                        request, 'Your order was added succesfully!')
+                order[item.name] = order_item['amount']
+                request.session['order'] = order
+
+                print("order session variable updated")
+            else:
+                '''
+                if no orders have been placed yet, e.g. this is the first added order item, create
+                an order list (session variable, dictionary) and add this item to the list
+                '''
+                order = {item.name: order_item['amount']}
+                request.session['order'] = order
+                print("order session variable made")
+                messages.success(request, 'Your order was added succesfully!')
+            del request.session['order_item']
+            request.session.modified = True
+
+        if request.session.get('order'):
+            '''
+            if orders have been placed before
+            '''
+            order = request.session['order']
+            '''
+            get the combined price for the amount of menu items (eg 3x carpaccio = €27 total) as
+            well as the overall totall of all orders and put them in a dictionary to be passed to
+            the form {menu_item: {'price': price, 'amount': amount}, ... }
+            '''
+            total = 0
+            form_data = dict()
+            for item in order:
+                amount = order[item]
+                # print('AMOUNT: ' + str(amount))
+                item_id = MenuItem.objects.values().filter(name=item)[0]['id']
+                item_price = MenuItemAddition.objects.values().filter(menu_item=item_id)[
+                    0]['selling_price']
+                combined_price = item_price * amount
+                form_data[item] = {'amount': amount,
+                                   'price': str(combined_price)}
+                total += combined_price
+            form = OrderForm(form_data)
+            context['orders'] = order
+            context['total'] = total
+            context['form'] = form
+        else:
+            if request.session.get('orderplaced'):
+                del request.session['orderplaced']
+                request.session.modified = True
+
+        get_orders = Order.objects.filter(table_no=table_id)
+        if(get_orders):
+            placed_orders = dict()
+            total_price = 0
+            for order in get_orders:
+                item_name = order.menu_item.name
+                price_addition = MenuItemAddition.objects.filter(
+                    menu_item=order.menu_item)
+                selling_price = price_addition.values_list(
+                    'selling_price', flat=True)[0]
+                total_price += selling_price
+                if item_name not in placed_orders:
+                    placed_orders[item_name] = {
+                        'selling_price': selling_price, 'amount': 1}
+                else:
+                    placed_orders[item_name]['amount'] += 1
+                    placed_orders[item_name]['selling_price'] += selling_price
+            context['placed_orders'] = placed_orders
+            context['total_pice'] = total_price
+
+        context['table_id'] = table_id
+        return render(request, 'restaurant/orders.html', context)
+
     def post(self, request, *args, **kwargs):
         '''
         if request method is POST
         '''
-        messages.success(request, 'menu menu menu')
-        return HttpResponseRedirect(reverse('restaurant:orders'))
+        table_id = self.get_table_id(request)
+        return self.place_order(request, table_id)
 
-
-def orders_view(request):
-    if not request.session.get('table_id'):
-        return HttpResponse("No table id! Please scan the qr code on your table!")
-    else:
-        table_id = request.session['table_id']  # THIS GIVES AN ERROR WHEN THERE IS NO TABLE ID!
-        if request.method == 'POST':
-            # if form is submitted, save orders to databaseself.
-            message = ""
-            for item, amount in request.POST.items():
-                if item in request.session['order']:
-                    message += item + ', ' + amount + '</br>'
-                    order_item = get_object_or_404(MenuItem, name=item)
-                    table_id = request.session['table_id']
-                    for orders in range(int(amount)):
-                        order = Order(menu_item=order_item, table_no=table_id,
-                                      order_time=datetime.datetime.now())
-                        try:
-                            order.save()
-                        except Exception as e:
-                            print(e)
-                            messages.error(
-                                request, 'There was a problem, your order was not places!')
-                            return HttpResponseRedirect(reverse('restaurant:orders'))
-            request.session['orderplaced'] = True
-            del request.session['order']
-            request.session.modified = True
-            messages.success(request, 'Your order was placed succesfully!')
-            return HttpResponseRedirect(reverse('restaurant:orders'))
+    def get_table_id(self, request):
+        if not request.session.get('table_id'):
+            return HttpResponse("No table id! Please scan the qr code on your table!")
         else:
-            # otherwise render the order page.
-            context = {}
-            if request.session.get('order_item'):
-                # there will not always be an order item to add!
-                order_item = request.session['order_item']
-                item = get_object_or_404(MenuItem, pk=order_item['id'])
-                if request.session.get('order'):
-                    order = request.session['order']
-                    if item.name in order:
-                        messages.success(
-                            request, 'Your order was updated succesfully!')
-                    else:
-                        messages.success(
-                            request, 'Your order was added succesfully!')
-                    order[item.name] = order_item['amount']
-                    request.session['order'] = order
+            table_id = request.session['table_id']
+            return table_id
 
-                    print("order session variable updated")
-                else:
-                    order = {item.name: order_item['amount']}
-                    request.session['order'] = order
-                    print("order session variable made")
-                    messages.success(request, 'Your order was added succesfully!')
-                del request.session['order_item']
-                request.session.modified = True
-
-            if request.session.get('order'):
-                '''
-                if orders have been placed before
-                '''
-                order = request.session['order']
-                '''
-                get the combined price for the amount of menu items (eg 3x carpaccio = €27 total) as
-                well as the overall totall of all orders and put them in a dictionary to be passed to
-                the form {menu_item: {'price': price, 'amount': amount}, ... }
-                '''
-                total = 0
-                form_data = dict()
-                for item in order:
-                    amount = order[item]
-                    # print('AMOUNT: ' + str(amount))
-                    item_id = MenuItem.objects.values().filter(name=item)[0]['id']
-                    item_price = MenuItemAddition.objects.values().filter(menu_item=item_id)[
-                        0]['selling_price']
-                    combined_price = item_price * amount
-                    form_data[item] = {'amount': amount,
-                                       'price': str(combined_price)}
-                    total += combined_price
-                form = OrderForm(form_data)
-                context['orders'] = order
-                context['total'] = total
-                context['form'] = form
-            else:
-                if request.session.get('orderplaced'):
-                    del request.session['orderplaced']
-                    request.session.modified = True
-
-            get_orders = Order.objects.filter(table_no=table_id)
-            if(get_orders):
-                placed_orders = dict()
-                total_price = 0
-                for order in get_orders:
-                    item_name = order.menu_item.name
-                    price_addition = MenuItemAddition.objects.filter(
-                        menu_item=order.menu_item)
-                    selling_price = price_addition.values_list(
-                        'selling_price', flat=True)[0]
-                    total_price += selling_price
-                    if item_name not in placed_orders:
-                        placed_orders[item_name] = {
-                            'selling_price': selling_price, 'amount': 1}
-                    else:
-                        placed_orders[item_name]['amount'] += 1
-                        placed_orders[item_name]['selling_price'] += selling_price
-                context['placed_orders'] = placed_orders
-                context['total_pice'] = total_price
-
-            context['table_id'] = table_id
-            return render(request, 'restaurant/orders.html', context)
+    def place_order(self, request, table_id):
+        for item, amount in request.POST.items():
+            if item in request.session['order']:
+                order_item = get_object_or_404(MenuItem, name=item)
+                for orders in range(int(amount)):
+                    order = Order(menu_item=order_item, table_no=table_id,
+                                  order_time=datetime.datetime.now())
+                    try:
+                        order.save()
+                        request.session['orderplaced'] = True
+                        del request.session['order']
+                        request.session.modified = True
+                        messages.success(request, 'Your order was placed succesfully!')
+                        return HttpResponseRedirect(reverse('restaurant:orders'))
+                    except Exception as e:
+                        print(e)
+                        messages.error(
+                            request, 'There was a problem, your order was not places!')
+                        return HttpResponseRedirect(reverse('restaurant:orders'))
 
 
 class MenuCardList(TemplateView):
