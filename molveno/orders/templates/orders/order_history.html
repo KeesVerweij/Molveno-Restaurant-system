@@ -21,8 +21,8 @@ Order History:
     <tr>
       <td>{{ item }}</td>
       <td>{{ item.table_no }}</td>
-      <td>{{ item.order_time }}</td>
-      <td>{{ item.completed_time }}</td>
+      <td>{{ item.order_time|date:'d-m-Y H:i' }}</td>
+      <td>{{ item.completed_time|date:'d-m-Y H:i' }}</td>
     </tr>
     {% endfor %}
   </table>
