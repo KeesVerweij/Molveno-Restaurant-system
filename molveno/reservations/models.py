@@ -1,4 +1,5 @@
 from django.db import models
+import time
 
 class Table(models.Model):
     '''contains properties for each table in the restaurant '''
@@ -31,8 +32,9 @@ class Reservation(models.Model):
     special_request = models.TextField(blank=True)
 
     # associated table(s)
-    tables = models.ManyToManyField(Table)
+    table = models.ForeignKey(Table, on_delete=models.PROTECT)
 
     def __str__(self):
         timezonelocal = 'Europe/Amsterdam'
-        return "Reservation for " + str(self.num_guests) + " people on " + self.start_date_time.strftime("%d-%m-%Y, %H:%M") + " - " + self.end_date_time.strftime("%H:%M")
+        #timezone.localtime(timezone.now())
+        return "Reservation for " + str(self.num_guests) + " people on " + self.start_date_time.strftime('%d-%m-%Y')
