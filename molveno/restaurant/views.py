@@ -1,3 +1,4 @@
+import pickle
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.base import TemplateView
 from django.views import generic, View
@@ -9,6 +10,7 @@ from django.contrib.admin.sites import AlreadyRegistered
 from django.contrib import admin, auth, messages
 from .models import *
 from django.forms import ModelForm
+from .order_list import OrderList
 
 
 # We will use class-based views
@@ -107,6 +109,12 @@ class MenuItemView(generic.DetailView):
 
 
 class AddOrderItem(View):
+    def add_to_order(self, request, item_id, amount):
+        Item = get_object_or_404(MenuItem, pk=item_id)
+        if not request.session.get['order_list']:
+            # if this is the first order that is added we need to create the order_list
+            order_list = OrderList()
+
     def get(self, request, *args, **kwargs):
         '''
         if request method is GET (e.g. someone typed in the url directely), redirect to orderpage
@@ -122,7 +130,7 @@ class AddOrderItem(View):
         form = MenuItemForm(request.POST)
         if form.is_valid():
             order_amount = int(form.cleaned_data['order_amount'])
-            request.session['order_item'] = {'id': item_id, 'amount': order_amount}
+            add_to_order(item_id, order_amount)
             return HttpResponseRedirect(reverse('restaurant:orders'))
         else:
             return HttpResponse("Oops! something went wrong!")
